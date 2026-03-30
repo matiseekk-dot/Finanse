@@ -13,7 +13,7 @@ import {
   ClipboardList, RefreshCw, AlarmClock, Copy
 } from "lucide-react";
 
-// ── FONTS ──────────────────────────────────────────────────────────────────
+//    FONTS                                                                   
 const FontLoader = () => (
   <style>{`
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap');
@@ -47,33 +47,39 @@ const FontLoader = () => (
   `}</style>
 );
 
-// ── CONSTANTS ───────────────────────────────────────────────────────────────
+//    CONSTANTS                                                                
 const MONTHS = ["Sty","Lut","Mar","Kwi","Maj","Cze","Lip","Sie","Wrz","Paź","Lis","Gru"];
 const MONTH_NAMES = ["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
 
-const CATEGORIES = [
-  { id: "rząd",        label: "Rząd/Podatki",  icon: Building,   color: "#3b82f6" },
-  { id: "rachunki",    label: "Rachunki",       icon: Zap,        color: "#f59e0b" },
-  { id: "inwestycje",  label: "Inwestycje",     icon: TrendingUp, color: "#8b5cf6" },
-  { id: "zakupy",      label: "Zakupy",         icon: ShoppingBag,color: "#06b6d4" },
-  { id: "transport",   label: "Transport",      icon: Car,        color: "#f97316" },
-  { id: "jedzenie",    label: "Jedzenie",       icon: Utensils,   color: "#ef4444" },
-  { id: "kawiarnia",   label: "Kawiarnia",      icon: Coffee,     color: "#a78bfa" },
-  { id: "zdrowie",     label: "Zdrowie",        icon: Shield,     color: "#10b981" },
-  { id: "rozrywka",    label: "Rozrywka",       icon: Gift,       color: "#ec4899" },
-  { id: "muzyka",      label: "Muzyka",         icon: Gift,       color: "#f43f5e" },
-  { id: "prezenty",    label: "Prezenty",       icon: Gift,       color: "#e879f9" },
-  { id: "bukmacher",   label: "Bukmacher",      icon: TrendingUp, color: "#dc2626" },
-  { id: "ubrania",     label: "Ubrania",        icon: ShoppingBag,color: "#818cf8" },
-  { id: "alkohol",     label: "Alkohol",        icon: Coffee,     color: "#2563eb" },
-  { id: "inne",        label: "Inne",           icon: Wallet,     color: "#6b7280" },
-  { id: "przychód",    label: "Przychód",       icon: DollarSign, color: "#10b981" },
-  { id: "sprzedaż",    label: "Sprzedaż",       icon: DollarSign, color: "#34d399" },
-  { id: "kiga",        label: "Kiga",           icon: DollarSign, color: "#a3e635" },
-  { id: "bukmacherka", label: "Bukmacherka",    icon: DollarSign, color: "#fb923c" },
+// group: "essential" = sta e/wa ne, "lifestyle" = dodatkowe, "income" = przychody
+const BASE_CATEGORIES = [
+  { id: "rząd",        label: "Rząd/Podatki",  icon: Building,   color: "#3b82f6", group: "essential" },
+  { id: "rachunki",    label: "Rachunki",       icon: Zap,        color: "#f59e0b", group: "essential" },
+  { id: "inwestycje",  label: "Inwestycje",     icon: TrendingUp, color: "#8b5cf6", group: "essential" },
+  { id: "jedzenie",    label: "Jedzenie",       icon: Utensils,   color: "#ef4444", group: "essential" },
+  { id: "transport",   label: "Transport",      icon: Car,        color: "#f97316", group: "essential" },
+  { id: "zdrowie",     label: "Zdrowie",        icon: Shield,     color: "#10b981", group: "essential" },
+  { id: "zakupy",      label: "Zakupy",         icon: ShoppingBag,color: "#06b6d4", group: "lifestyle" },
+  { id: "kawiarnia",   label: "Kawiarnia",      icon: Coffee,     color: "#a78bfa", group: "lifestyle" },
+  { id: "rozrywka",    label: "Rozrywka",       icon: Gift,       color: "#ec4899", group: "lifestyle" },
+  { id: "muzyka",      label: "Muzyka",         icon: Gift,       color: "#f43f5e", group: "lifestyle" },
+  { id: "ubrania",     label: "Ubrania",        icon: ShoppingBag,color: "#818cf8", group: "lifestyle" },
+  { id: "prezenty",    label: "Prezenty",       icon: Gift,       color: "#e879f9", group: "lifestyle" },
+  { id: "alkohol",     label: "Alkohol",        icon: Coffee,     color: "#2563eb", group: "lifestyle" },
+  { id: "bukmacher",   label: "Bukmacher",      icon: TrendingUp, color: "#dc2626", group: "lifestyle" },
+  { id: "inne",        label: "Inne",           icon: Wallet,     color: "#6b7280", group: "lifestyle" },
+  { id: "przychód",    label: "Przychód",       icon: DollarSign, color: "#10b981", group: "income" },
+  { id: "sprzedaż",    label: "Sprzedaż",       icon: DollarSign, color: "#34d399", group: "income" },
+  { id: "kiga",        label: "Kiga",           icon: DollarSign, color: "#a3e635", group: "income" },
+  { id: "bukmacherka", label: "Bukmacherka",    icon: DollarSign, color: "#fb923c", group: "income" },
 ];
 
-const getCat = (id) => CATEGORIES.find(c => c.id === id) || CATEGORIES[9];
+// Static CATEGORIES   custom ones merged at render time via allCats prop
+const CATEGORIES = BASE_CATEGORIES;
+const getCat = (id) => CATEGORIES.find(c => c.id === id) || { id, label: id, icon: Wallet, color: "#6b7280" };
+
+// Helper used where customCats are available
+const getAllCats = (customCats = []) => [...BASE_CATEGORIES, ...customCats];
 
 const INITIAL_ACCOUNTS = [
   { id: 1, name: "PKO",              type: "savings", bank: "PKO BP",    balance: 7505.50,  color: "#3b82f6", iban: "PL61 1090 1014 0000 0712 1981 2874" },
@@ -83,20 +89,23 @@ const INITIAL_ACCOUNTS = [
 ];
 
 
-// ── RECURRING BILLS ──────────────────────────────────────────────────────────
-// ── PAYMENTS ─────────────────────────────────────────────────────────────────
-// type: "credit" | "bill" | "subscription"
+//    RECURRING BILLS                                                           
+//    PAYMENTS                                                                  
+// type: "credit" | "bill" | "sub" | "savings"
 const INITIAL_PAYMENTS = [
-  // ── Zobowiązania kredytowe ─────────────────────────────────────────────────
+  //    Zobowi zania kredytowe                                                  
   { id: 1, name: "Kredyt Dom",  type: "credit", amount: -1563.00, cat: "rachunki", acc: 1, color: "#3b82f6", freq: "monthly", dueDay: 10, trackPaid: true },
   { id: 2, name: "Kredyt auto", type: "credit", amount: -1125.43, cat: "rachunki", acc: 1, color: "#f97316", freq: "monthly", dueDay: 26, trackPaid: true },
-  // ── Rachunki ──────────────────────────────────────────────────────────────
-  { id: 3, name: "Żłobek",      type: "bill",   amount: -1163.20, cat: "rachunki", acc: 1, color: "#ec4899", freq: "monthly", dueDay:  3, trackPaid: true },
-  { id: 4, name: "Czynsz",      type: "bill",   amount:  -700.00, cat: "rachunki", acc: 1, color: "#f59e0b", freq: "monthly", dueDay:  6, trackPaid: true },
+  //    Rachunki                                                               
+  { id: 3, name: "Żłobek",      type: "bill",   amount: -1163.20, cat: "rachunki", acc: 1, color: "#ec4899", freq: "monthly", dueDay:  3, trackPaid: true, shared: true },
+  { id: 4, name: "Czynsz",      type: "bill",   amount:  -700.00, cat: "rachunki", acc: 1, color: "#f59e0b", freq: "monthly", dueDay:  6, trackPaid: true, shared: true },
   { id: 5, name: "Netia",       type: "bill",   amount:  -135.00, cat: "rachunki", acc: 1, color: "#06b6d4", freq: "monthly", dueDay: 27, trackPaid: true },
-  // ── Subskrypcje ───────────────────────────────────────────────────────────
+  //    Subskrypcje                                                            
   { id: 6, name: "Spotify",     type: "sub",    amount:   -23.00, cat: "muzyka",   acc: 1, color: "#1db954", freq: "monthly", dueDay:  5, trackPaid: true },
   { id: 7, name: "Netflix",     type: "sub",    amount:   -43.00, cat: "rozrywka", acc: 1, color: "#e50914", freq: "monthly", dueDay:  5, trackPaid: true },
+  //    Cele oszcz dno ciowe                                                   
+  { id: 8, name: "Oszczędności PKO",  type: "savings", amount: -1000.00, cat: "inwestycje", acc: 1, color: "#10b981", freq: "monthly", dueDay: 10, trackPaid: true },
+  { id: 9, name: "XTB IKZE",          type: "savings", amount:  -500.00, cat: "inwestycje", acc: 3, color: "#f59e0b", freq: "monthly", dueDay: 10, trackPaid: true },
 ];
 
 const INITIAL_PAID = {
@@ -107,20 +116,15 @@ const INITIAL_PAID = {
 
 
 
-// ── SAVINGS GOALS ─────────────────────────────────────────────────────────────
-const INITIAL_GOALS = [
-  { id: 1, name: "Wakacje letnie",    target: 8000,   saved: 2500,  accId: 2, color: "#06b6d4", emoji: "🏖️"  },
-  { id: 2, name: "Nowy laptop",       target: 6000,   saved: 1800,  accId: 2, color: "#8b5cf6", emoji: "💻"  },
-  { id: 3, name: "Fundusz awaryjny",  target: 20000,  saved: 15000, accId: 3, color: "#10b981", emoji: "🛡️"  },
-  { id: 4, name: "Emerytura XTB",     target: 100000, saved: 1000,  accId: 4, color: "#f59e0b", emoji: "📈"  },
-];
+//    SAVINGS GOALS                                                              
+const INITIAL_GOALS = [];
 
-// ─── MARZEC 2026 ─────────────────────────────────────────────────────────────
-// Przychody: 16 540,77  |  Wydatki: 25 094,11  |  Bilans: −8 553,34
-// ─────────────────────────────────────────────────────────────────────────────
+//     MARZEC 2026                                                              
+// Przychody: 16 540,77  |  Wydatki: 25 094,11  |  Bilans:  8 553,34
+//                                                                              
 const INITIAL_TRANSACTIONS = [
 
-  // ── PRZYCHODY ─────────────────────────────────────────────────────────────
+  //    PRZYCHODY                                                              
   { id:  1, date: "2026-03-12", desc: "Wypłata",    amount:  10124.77, cat: "przychód",    acc: 1 },
   { id:  2, date: "2026-03-23", desc: "Vinted",     amount:   1750.00, cat: "sprzedaż",    acc: 1 },
   { id:  3, date: "2026-03-16", desc: "Vinted",     amount:    227.00, cat: "sprzedaż",    acc: 1 },
@@ -131,10 +135,10 @@ const INITIAL_TRANSACTIONS = [
   { id:  8, date: "2026-03-21", desc: "Superbet",   amount:    800.00, cat: "bukmacherka", acc: 1 },
   { id:  9, date: "2026-03-12", desc: "Superbet",   amount:    300.00, cat: "bukmacherka", acc: 1 },
 
-  // ── RZĄD → 7 000,00 zł (1 transakcja) ────────────────────────────────────
+  //    RZ D   7 000,00 z  (1 transakcja)                                     
   { id: 10, date: "2026-03-20", desc: "PIT",                 amount:  -7000.00, cat: "rząd",        acc: 1 },
 
-  // ── RACHUNKI → 4 821,63 zł (6 transakcji) ────────────────────────────────
+  //    RACHUNKI   4 821,63 z  (6 transakcji)                                 
   { id: 11, date: "2026-03-27", desc: "Internet",            amount:   -135.00, cat: "rachunki",    acc: 1 },
   { id: 12, date: "2026-03-27", desc: "Netia",               amount:   -135.00, cat: "rachunki",    acc: 1 },
   { id: 13, date: "2026-03-26", desc: "Kredyt auto",         amount:  -1125.43, cat: "rachunki",    acc: 1 },
@@ -142,20 +146,20 @@ const INITIAL_TRANSACTIONS = [
   { id: 15, date: "2026-03-06", desc: "Czynsz",              amount:   -700.00, cat: "rachunki",    acc: 1 },
   { id: 16, date: "2026-03-03", desc: "Żłobek",              amount:  -1163.20, cat: "rachunki",    acc: 1 },
 
-  // ── INWESTYCJE → 3 850,00 zł (4 transakcje) ──────────────────────────────
+  //    INWESTYCJE   3 850,00 z  (4 transakcje)                               
   { id: 17, date: "2026-03-23", desc: "Oszczędności",        amount:  -1500.00, cat: "inwestycje",  acc: 3 },
   { id: 18, date: "2026-03-16", desc: "XTB",                 amount:   -200.00, cat: "inwestycje",  acc: 3 },
   { id: 19, date: "2026-03-12", desc: "Oszczędności",        amount:  -1000.00, cat: "inwestycje",  acc: 3 },
   { id: 20, date: "2026-03-12", desc: "XTB",                 amount:  -1150.00, cat: "inwestycje",  acc: 3 },
 
-  // ── ZAKUPY → 2 059,25 zł (5 transakcji) ──────────────────────────────────
+  //    ZAKUPY   2 059,25 z  (5 transakcji)                                   
   { id: 21, date: "2026-03-17", desc: "Bieżnia",             amount:   -579.00, cat: "zakupy",      acc: 1 },
   { id: 22, date: "2026-03-16", desc: "Żabka",               amount:    -37.96, cat: "zakupy",      acc: 1 },
   { id: 23, date: "2026-03-13", desc: "Żabka",               amount:    -20.29, cat: "zakupy",      acc: 1 },
   { id: 24, date: "2026-03-12", desc: "Telefon",             amount:   -128.00, cat: "zakupy",      acc: 1 },
   { id: 25, date: "2026-03-12", desc: "Zakupy do 12 marzec", amount:  -1294.00, cat: "zakupy",      acc: 1 },
 
-  // ── TRANSPORT → 1 761,00 zł (8 transakcji) ───────────────────────────────
+  //    TRANSPORT   1 761,00 z  (8 transakcji)                                
   { id: 26, date: "2026-03-22", desc: "Bolt",                amount:    -35.00, cat: "transport",   acc: 1 },
   { id: 27, date: "2026-03-22", desc: "Paliwo",              amount:   -270.00, cat: "transport",   acc: 1 },
   { id: 28, date: "2026-03-13", desc: "Uber",                amount:    -15.00, cat: "transport",   acc: 1 },
@@ -165,27 +169,27 @@ const INITIAL_TRANSACTIONS = [
   { id: 32, date: "2026-03-12", desc: "Uber",                amount:   -100.00, cat: "transport",   acc: 1 },
   { id: 33, date: "2026-03-12", desc: "Auto gwarancja",      amount:  -1083.00, cat: "transport",   acc: 1 },
 
-  // ── JEDZENIE → 1 058,70 zł (4 transakcje) ────────────────────────────────
+  //    JEDZENIE   1 058,70 z  (4 transakcje)                                 
   { id: 34, date: "2026-03-22", desc: "Restauracje",         amount:   -500.00, cat: "jedzenie",    acc: 1 },
   { id: 35, date: "2026-03-22", desc: "Restauracje",         amount:   -152.20, cat: "jedzenie",    acc: 1 },
   { id: 36, date: "2026-03-13", desc: "Praca",               amount:    -26.50, cat: "jedzenie",    acc: 1 },
   { id: 37, date: "2026-03-12", desc: "Restauracje",         amount:   -380.00, cat: "jedzenie",    acc: 1 },
 
-  // ── ROZRYWKA → 1 054,00 zł (5 transakcji) ──────────────────────────────────
+  //    ROZRYWKA   1 054,00 z  (5 transakcji)                                   
   { id: 38, date: "2026-03-22", desc: "Bilety Kreator",  amount:  -350.00, cat: "rozrywka", acc: 1 },
   { id: 39, date: "2026-03-17", desc: "Subskrypcja",     amount:  -100.00, cat: "rozrywka", acc: 1 },
   { id: 40, date: "2026-03-12", desc: "Gry",             amount:  -279.00, cat: "rozrywka", acc: 1 },
   { id: 41, date: "2026-03-12", desc: "Subskrypcja",     amount:  -295.00, cat: "rozrywka", acc: 1 },
   { id: 42, date: "2026-03-12", desc: "Ksiazki",         amount:   -30.00, cat: "rozrywka", acc: 1 },
 
-  // ── MUZYKA → 947,00 zł (1 transakcja) ────────────────────────────────────
+  //    MUZYKA   947,00 z  (1 transakcja)                                     
   { id: 43, date: "2026-03-12", desc: "Winyle",          amount:  -947.00, cat: "muzyka",   acc: 1 },
 
-  // ── PREZENTY → 564,34 zł (2 transakcje) ──────────────────────────────────
+  //    PREZENTY   564,34 z  (2 transakcje)                                   
   { id: 44, date: "2026-03-18", desc: "Laura",           amount:  -105.35, cat: "prezenty", acc: 1 },
   { id: 45, date: "2026-03-12", desc: "Kiga",            amount:  -458.99, cat: "prezenty", acc: 1 },
 
-  // ── BUKMACHER → 560,00 zł (11 transakcji) ────────────────────────────────
+  //    BUKMACHER   560,00 z  (11 transakcji)                                 
   { id: 46, date: "2026-03-22", desc: "Kupon",           amount:   -30.00, cat: "bukmacher", acc: 1 },
   { id: 47, date: "2026-03-21", desc: "Kupon",           amount:   -60.00, cat: "bukmacher", acc: 1 },
   { id: 48, date: "2026-03-18", desc: "Kupon",           amount:   -15.00, cat: "bukmacher", acc: 1 },
@@ -198,17 +202,17 @@ const INITIAL_TRANSACTIONS = [
   { id: 55, date: "2026-03-13", desc: "Kupon",           amount:   -15.00, cat: "bukmacher", acc: 1 },
   { id: 56, date: "2026-03-12", desc: "Kupony",          amount:  -345.00, cat: "bukmacher", acc: 1 },
 
-  // ── UBRANIA → 540,00 zł (1 transakcja) ─────────────────────────────────────
+  //    UBRANIA   540,00 z  (1 transakcja)                                      
   { id: 57, date: "2026-03-12", desc: "Buty i bytom",  amount:  -540.00, cat: "ubrania",  acc: 1 },
 
-  // ── ALKOHOL → 498,19 zł (2 transakcje) ──────────────────────────────────
+  //    ALKOHOL   498,19 z  (2 transakcje)                                   
   { id: 58, date: "2026-03-13", desc: "Alko",          amount:  -240.19, cat: "alkohol",  acc: 1 },
   { id: 59, date: "2026-03-12", desc: "Alko",          amount:  -258.00, cat: "alkohol",  acc: 1 },
 
-  // ── ZDROWIE → 380,00 zł (1 transakcja) ───────────────────────────────────
+  //    ZDROWIE   380,00 z  (1 transakcja)                                    
   { id: 60, date: "2026-03-12", desc: "Laura",         amount:  -380.00, cat: "zdrowie",  acc: 1 },
 
-  // ── PRZELEW WEWNĘTRZNY ────────────────────────────────────────────────────
+  //    PRZELEW WEWN TRZNY                                                     
   { id: 61, date: "2026-03-10", desc: "Przelew → XTB Emerytalne",     amount:   -500.00, cat: "inne",      acc: 1 },
   { id: 62, date: "2026-03-10", desc: "Przelew ← konto główne",       amount:    500.00, cat: "inne",      acc: 4 },
 ];
@@ -231,14 +235,14 @@ const INITIAL_BUDGETS = [
 ];
 
 const XTB_PORTFOLIO = [
-  // ── Konto zwykłe (9 606,96 PLN) ──────────────────────────────────────────
+  //    Konto zwyk e (9 606,96 PLN)                                           
   { ticker: "2B7K.DE", name: "MSCI World SRI",          type: "ETF",    account: "zwykłe",
     qty: 148.0874, avgPricePLN: 51.73, currentPricePLN: 50.74,
     valuePLN: 7514.40, pnlPLN: -146.80, pnlPct: -1.92, currency: "EUR" },
   { ticker: "AMEM.DE", name: "MSCI Emerging Markets",   type: "ETF",    account: "zwykłe",
     qty: 76.117,   avgPricePLN: 27.07, currentPricePLN: 27.40,
     valuePLN: 2085.90, pnlPLN:  25.41, pnlPct:  1.23, currency: "EUR" },
-  // ── IKZE (1 135,52 PLN) ──────────────────────────────────────────────────
+  //    IKZE (1 135,52 PLN)                                                   
   { ticker: "ACWI",    name: "MSCI All Country World",  type: "ETF",    account: "IKZE",
     qty: 0.4429,   avgPricePLN: 2314.28, currentPricePLN: 2225.10,
     valuePLN:  985.40, pnlPLN: -39.80, pnlPct: -3.88, currency: "EUR" },
@@ -247,16 +251,27 @@ const XTB_PORTFOLIO = [
     valuePLN:  148.00, pnlPLN: -12.02, pnlPct: -7.51, currency: "USD" },
 ];
 
-const HIST_DATA = [
-  { m: "Paź", income: 13200, expense: 11400, balance:  1800 },
-  { m: "Lis", income: 14100, expense: 16200, balance: -2100 },
-  { m: "Gru", income: 18500, expense: 20100, balance: -1600 },
-  { m: "Sty", income: 15400, expense: 13800, balance:  1600 },
-  { m: "Lut", income: 14800, expense: 17200, balance: -2400 },
-  { m: "Mar", income: 16541, expense: 25094, balance: -8553 },
-];
+// HIST_DATA is now computed dynamically from transactions in Dashboard
+// This constant is kept as empty placeholder
+const HIST_DATA = [];
 
-// ── UTILS ────────────────────────────────────────────────────────────────────
+function buildHistData(transactions, cycleDay = 1) {
+  const monthSet = new Set(transactions.map(t => t.date.slice(0,7)));
+  const months   = [...monthSet].sort();
+  const last6    = months.slice(-6);
+  return last6.map(ym => {
+    const [,mm] = ym.split("-");
+    const mIdx  = parseInt(mm) - 1;
+    const txs   = cycleDay <= 1
+      ? transactions.filter(t => t.date.startsWith(ym) && t.cat !== "inne")
+      : cycleTxs(transactions, mIdx, cycleDay).filter(t => t.cat !== "inne");
+    const income  = txs.filter(t => t.amount > 0).reduce((s,t) => s + t.amount, 0);
+    const expense = txs.filter(t => t.amount < 0).reduce((s,t) => s + Math.abs(t.amount), 0);
+    return { m: MONTHS[mIdx], ym, income: Math.round(income), expense: Math.round(expense), balance: Math.round(income - expense) };
+  });
+}
+
+//    UTILS                                                                     
 const fmt = (n, showSign = false) => {
   const s = Math.abs(n).toLocaleString("pl-PL", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   if (showSign) return (n >= 0 ? "+" : "−") + s + " zł";
@@ -269,11 +284,11 @@ const fmtShort = (n) => {
 };
 
 
-// ── BILLING CYCLE HELPER ─────────────────────────────────────────────────────
+//    BILLING CYCLE HELPER                                                      
 // Returns [startDate, endDate] strings for a given month index and cycleDay.
-// If cycleDay=1 → standard calendar month.
-// If cycleDay=25 → 25th of prev month to 24th of current month.
-// "month" param is 0-indexed (0=Jan … 11=Dec), year hardcoded 2026.
+// If cycleDay=1   standard calendar month.
+// If cycleDay=25   25th of prev month to 24th of current month.
+// "month" param is 0-indexed (0=Jan   11=Dec), year hardcoded 2026.
 const getCycleRange = (month, cycleDay) => {
   if (cycleDay <= 1) {
     const y = 2026;
@@ -283,7 +298,7 @@ const getCycleRange = (month, cycleDay) => {
     const end   = `${y}-${String(m).padStart(2,"0")}-${String(lastDay).padStart(2,"0")}`;
     return [start, end];
   }
-  // e.g. cycleDay=25, month=2 (March) → 25 Feb – 24 Mar
+  // e.g. cycleDay=25, month=2 (March)   25 Feb   24 Mar
   const y = 2026;
   // start: cycleDay of previous month
   const startMonth = month === 0 ? 12 : month;       // 1-indexed prev month
@@ -307,7 +322,7 @@ const fmtCycleLabel = (month, cycleDay) => {
   return `${cycleDay} ${MONTHS[prevMonth]} – ${cycleDay-1} ${MONTHS[month]} 2026`;
 };
 
-// ── COMPONENTS ───────────────────────────────────────────────────────────────
+//    COMPONENTS                                                                
 const Card = ({ children, className = "", style = {} }) => (
   <div style={{
     background: "linear-gradient(145deg, #0f1825 0%, #0a1120 100%)",
@@ -332,7 +347,7 @@ const Badge = ({ children, color = "#3b82f6" }) => (
   }}>{children}</span>
 );
 
-// ── MODAL ────────────────────────────────────────────────────────────────────
+//    MODAL                                                                     
 const Modal = ({ open, onClose, title, children }) => {
   if (!open) return null;
   return (
@@ -400,15 +415,20 @@ const Select = ({ label, children, ...props }) => (
 
 
 
-// ── SETTINGS / IMPORT-EXPORT PANEL ───────────────────────────────────────────
-const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
-                         setTransactions, setAccounts, setBudgets, cycleDay, setCycleDay }) => {
+//    SETTINGS / IMPORT-EXPORT PANEL                                            
+const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, payments, paid,
+                         goals, customCats,
+                         setTransactions, setAccounts, setBudgets, setCycleDay, setCustomCats,
+                         cycleDay }) => {
+  const [newCatLabel, setNewCatLabel] = useState("");
+  const [newCatColor, setNewCatColor] = useState("#06b6d4");
+  const [newCatType,  setNewCatType]  = useState("expense"); // expense | income
   const [importStatus, setImportStatus] = useState(null); // null | "ok" | "err" | "loading"
   const [importMsg, setImportMsg]       = useState("");
 
   if (!open) return null;
 
-  // ── EXPORT ─────────────────────────────────────────────────────────────────
+  //    EXPORT                                                                  
   const handleExport = () => {
     const wb = XLSX.utils.book_new();
 
@@ -420,7 +440,7 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
       Kwota:       t.amount,
       Kategoria:   t.cat,
       Konto_ID:    t.acc,
-      Konto_Nazwa: accounts.find(a => a.id === t.acc)?.name || "",
+      Konto_Nazwa: (accounts.find(a => a.id === t.acc) || {}).name || "",
     }));
     const wsTx = XLSX.utils.json_to_sheet(txRows);
     wsTx["!cols"] = [
@@ -441,7 +461,7 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
     wsAcc["!cols"] = [{wch:6},{wch:22},{wch:12},{wch:14},{wch:14},{wch:32}];
     XLSX.utils.book_append_sheet(wb, wsAcc, "Konta");
 
-    // Sheet 3: Budżety
+    // Sheet 3: Bud ety
     const budRows = budgets.map(b => ({
       Kategoria: b.cat,
       Limit_PLN: b.limit,
@@ -450,20 +470,22 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
     wsBud["!cols"] = [{wch:16},{wch:12}];
     XLSX.utils.book_append_sheet(wb, wsBud, "Budżety");
 
-    // Sheet 4: Rachunki
-    const billRows = bills.map(b => ({
-      ID:         b.id,
-      Nazwa:      b.name,
-      Kwota:      b.amount,
-      Dzień:      b.dueDay,
-      Kategoria:  b.cat,
-      Konto_ID:   b.acc,
+    // Sheet 4: P atno ci
+    const billRows = payments.map(b => ({
+      ID:           b.id,
+      Nazwa:        b.name,
+      Typ:          b.type || "bill",
+      Kwota:        b.amount,
+      Termin:       b.dueDay || "",
+      Częstotliwość:b.freq || "monthly",
+      Kategoria:    b.cat,
+      Konto_ID:     b.acc,
     }));
     const wsBill = XLSX.utils.json_to_sheet(billRows);
-    wsBill["!cols"] = [{wch:8},{wch:24},{wch:12},{wch:8},{wch:14},{wch:10}];
-    XLSX.utils.book_append_sheet(wb, wsBill, "Rachunki_stałe");
+    wsBill["!cols"] = [{wch:8},{wch:24},{wch:14},{wch:12},{wch:8},{wch:14},{wch:14},{wch:10}];
+    XLSX.utils.book_append_sheet(wb, wsBill, "Płatności");
 
-    // Sheet 5: Podsumowanie miesięczne
+    // Sheet 5: Podsumowanie miesi czne
     const months = [...new Set(transactions.map(t => t.date.slice(0,7)))].sort();
     const sumRows = months.map(m => {
       const mTx = transactions.filter(t => t.date.startsWith(m) && t.cat !== "inne");
@@ -475,11 +497,32 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
     wsSum["!cols"] = [{wch:10},{wch:14},{wch:14},{wch:14}];
     XLSX.utils.book_append_sheet(wb, wsSum, "Podsumowanie");
 
+    // Sheet 6: Cele oszcz dno ciowe
+    if (goals && goals.length) {
+      const goalRows = goals.map(g => ({
+        Nazwa: g.name, Cel_PLN: g.target, Odłożone_PLN: g.saved,
+        Postęp: g.target > 0 ? `${(g.saved/g.target*100).toFixed(0)}%` : "0%",
+        Emoji: g.emoji || "",
+      }));
+      const wsGoals = XLSX.utils.json_to_sheet(goalRows);
+      wsGoals["!cols"] = [{wch:24},{wch:12},{wch:14},{wch:10},{wch:6}];
+      XLSX.utils.book_append_sheet(wb, wsGoals, "Cele");
+    }
+
+    // Sheet 7: Pe ny backup JSON (wszystkie dane)
+    const backupData = {
+      accounts, transactions, budgets, payments, paid, goals,
+      customCats, month: undefined, cycleDay: undefined,
+    };
+    const wsBackup = XLSX.utils.json_to_sheet([{ JSON_backup: JSON.stringify(backupData) }]);
+    wsBackup["!cols"] = [{wch:200}];
+    XLSX.utils.book_append_sheet(wb, wsBackup, "_Backup_JSON");
+
     const today = new Date().toISOString().split("T")[0];
     XLSX.writeFile(wb, `FinTrack_export_${today}.xlsx`);
   };
 
-  // ── IMPORT ─────────────────────────────────────────────────────────────────
+  //    IMPORT                                                                  
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -532,7 +575,7 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
           }
         }
 
-        // Parse Budżety sheet
+        // Parse Bud ety sheet
         if (wb.SheetNames.includes("Budżety")) {
           const rows = XLSX.utils.sheet_to_json(wb.Sheets["Budżety"]);
           const newBud = rows
@@ -550,7 +593,7 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
 
         setImportStatus("ok");
         setImportMsg(
-          `✓ Zaimportowano: ${imported.tx} transakcji` +
+          `Zaimportowano: ${imported.tx} transakcji` +
           (imported.acc  ? `, ${imported.acc} kont`    : "") +
           (imported.bud  ? `, ${imported.bud} budżetów` : "")
         );
@@ -641,8 +684,8 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
         {/* EXPORT SECTION */}
         <SectionTitle>📤 Eksport danych</SectionTitle>
         <p style={{ fontSize: 13, color: "#64748b", marginBottom: 14, lineHeight: 1.6 }}>
-          Pobierz wszystkie swoje dane jako plik Excel (.xlsx) z 5 arkuszami:
-          Transakcje, Konta, Budżety, Rachunki stałe, Podsumowanie miesięczne.
+          Pobierz wszystkie swoje dane jako plik Excel (.xlsx) z 7 arkuszami:
+          Transakcje, Konta, Budżety, Płatności, Podsumowanie, Cele + pełny backup JSON.
         </p>
 
         {/* Stats row */}
@@ -765,8 +808,98 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
 
         <Divider/>
 
+        {/* Notifications */}
+        <SectionTitle>🔔 Przypomnienia</SectionTitle>
+        <div style={{ background: "#060b14", border: "1px solid #1a2744", borderRadius: 12, padding: "14px 16px" }}>
+          <div style={{ fontSize: 13, fontWeight: 600, color: "#e2e8f0", marginBottom: 6 }}>🔔 Automatyczne pop-upy</div>
+          <div style={{ fontSize: 12, color: "#64748b", lineHeight: 1.6 }}>
+            Gdy otworzysz aplikację, automatycznie pojawi się żółty banner z listą płatności
+            które są <strong style={{color:"#fcd34d"}}>dziś</strong>, <strong style={{color:"#fcd34d"}}>jutro</strong> lub <strong style={{color:"#fcd34d"}}>za 3 dni</strong>.
+            Działa bez żadnych uprawnień — tylko zamknij banner klikając ×.
+          </div>
+        </div>
+
+        <Divider/>
+
+        {/* Custom categories */}
+        <SectionTitle>🏷️ Moje kategorie</SectionTitle>
+        <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12, lineHeight: 1.6 }}>
+          Dodaj własne kategorie wydatków lub przychodów.
+        </p>
+
+        {/* Existing custom cats */}
+        {customCats.length > 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+            {customCats.map(cat => (
+              <div key={cat.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between",
+                background: "#060b14", border: "1px solid #1a2744", borderRadius: 10, padding: "10px 14px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 14, height: 14, borderRadius: 4, background: cat.color, flexShrink: 0 }}/>
+                  <span style={{ fontSize: 13, fontWeight: 600 }}>{cat.label}</span>
+                  <span style={{ fontSize: 11, color: "#334155" }}>{cat.type === "income" ? "przychód" : "wydatek"}</span>
+                </div>
+                <button onClick={() => setCustomCats(c => c.filter(x => x.id !== cat.id))}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "#475569" }}>
+                  <Trash2 size={13}/>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Add new custom cat */}
+        <div style={{ background: "#060b14", border: "1px solid #1a2744", borderRadius: 12, padding: "14px" }}>
+          <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+            {[["expense","Wydatek"],["income","Przychód"]].map(([v,l]) => (
+              <button key={v} onClick={() => setNewCatType(v)} style={{
+                flex: 1, padding: "7px 0", borderRadius: 8, cursor: "pointer", fontWeight: 700, fontSize: 12,
+                fontFamily: "'Space Grotesk', sans-serif",
+                background: newCatType === v ? "#1e3a5f" : "transparent",
+                border: `1px solid ${newCatType === v ? "#2563eb" : "#1a2744"}`,
+                color: newCatType === v ? "#60a5fa" : "#475569",
+              }}>{l}</button>
+            ))}
+          </div>
+          <input
+            value={newCatLabel}
+            onChange={e => setNewCatLabel(e.target.value)}
+            placeholder="Nazwa kategorii (np. Siłownia)"
+            style={{ width: "100%", background: "#0d1628", border: "1px solid #1a2744", borderRadius: 8,
+              padding: "10px 12px", color: "#e2e8f0", fontSize: 16, fontFamily: "'Space Grotesk', sans-serif",
+              outline: "none", marginBottom: 10, WebkitAppearance: "none" }}
+          />
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginBottom: 8, textTransform: "uppercase" }}>Kolor</div>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {["#3b82f6","#10b981","#f59e0b","#8b5cf6","#ef4444","#06b6d4","#ec4899","#f97316","#14b8a6","#a855f7","#84cc16","#f43f5e"].map(c => (
+                <div key={c} onClick={() => setNewCatColor(c)}
+                  style={{ width: 28, height: 28, borderRadius: 8, background: c, cursor: "pointer",
+                    border: newCatColor === c ? "2px solid white" : "2px solid transparent" }}/>
+              ))}
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              if (!newCatLabel.trim()) return;
+              const id = newCatLabel.trim().toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_ąćęłńóśźż]/gi, "");
+              if (CATEGORIES.find(c => c.id === id)) { alert("Kategoria o tej nazwie już istnieje"); return; }
+              setCustomCats(c => [...c, {
+                id, label: newCatLabel.trim(), icon: Wallet, color: newCatColor,
+                type: newCatType, custom: true,
+              }]);
+              setNewCatLabel("");
+            }}
+            style={{ width: "100%", background: "linear-gradient(135deg,#1e40af,#3b82f6)", border: "none",
+              borderRadius: 10, padding: "11px 0", color: "white", fontWeight: 700, fontSize: 14,
+              cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif" }}>
+            + Dodaj kategorię
+          </button>
+        </div>
+
+        <Divider/>
+
         {/* Data reset */}
-        <SectionTitle>⚠️ Resetowanie danych</SectionTitle>
+        <SectionTitle>️ Resetowanie danych</SectionTitle>
         <p style={{ fontSize: 13, color: "#64748b", marginBottom: 12, lineHeight: 1.6 }}>
           Usuwa wszystkie Twoje dane i przywraca dane demonstracyjne z marca 2026.
           Tej operacji nie można cofnąć.
@@ -795,14 +928,14 @@ const SettingsPanel = ({ open, onClose, accounts, transactions, budgets, paid,
 
 
 const DailyReminder = ({ transactions, onAddTx }) => {
-  const today = "2026-03-23";
+  const today = new Date().toISOString().split("T")[0];
   const todayTxs = transactions.filter(t => t.date === today && t.cat !== "inne");
   const [dismissed, setDismissed] = useState(false);
 
   // streak: consecutive days with at least one transaction
   const streak = (() => {
     let s = 0;
-    const d = new Date("2026-03-23");
+    const d = new Date();
     while (true) {
       const ds = d.toISOString().split("T")[0];
       const has = transactions.some(t => t.date === ds && t.cat !== "inne");
@@ -869,7 +1002,7 @@ const DailyReminder = ({ transactions, onAddTx }) => {
               <div style={{ fontSize: 11, color: "#475569", marginTop: 3 }}>
                 {urgent
                   ? "Pamiętaj – każdy wydatek się liczy 💸"
-                  : `Ostatnia: ${todayTxs[0]?.desc || "—"}`
+                  : `Ostatnia: ${(todayTxs[0] ? todayTxs[0].desc : null) || "—"}`
                 }
               </div>
             </div>
@@ -907,7 +1040,8 @@ const DailyReminder = ({ transactions, onAddTx }) => {
 };
 
 
-const Dashboard = ({ accounts, transactions, month, setMonth, onAddTx, cycleDay = 1 }) => {
+const Dashboard = ({ accounts, transactions, setTransactions, payments, month, setMonth, onAddTx, cycleDay = 1 }) => {
+  const histData = useMemo(() => buildHistData(transactions, cycleDay), [transactions, cycleDay]);
   const [hideBalance, setHideBalance] = useState(false);
   const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
   const savings = accounts.filter(a => a.type === "savings").reduce((s, a) => s + a.balance, 0);
@@ -929,10 +1063,33 @@ const Dashboard = ({ accounts, transactions, month, setMonth, onAddTx, cycleDay 
     })).sort((a,b) => b.val - a.val);
   }, [monthTx]);
 
+  const incomeData = useMemo(() => {
+    const map = {};
+    monthTx.filter(t => t.amount > 0 && t.cat !== "inne").forEach(t => {
+      map[t.cat] = (map[t.cat] || 0) + t.amount;
+    });
+    return Object.entries(map).map(([cat, val]) => ({
+      cat, val, ...getCat(cat)
+    })).sort((a,b) => b.val - a.val);
+  }, [monthTx]);
+
   const topCats = catData.slice(0, 5);
+  const [catTab, setCatTab] = useState("expense"); // "expense" | "income"
+
+  //    Balance widget: days left + daily budget                               
+  const today = new Date();
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate();
+  const dayOfMonth  = today.getDate();
+  const daysLeft    = daysInMonth - dayOfMonth;
+  const dailyBudget = balance < 0 ? 0 : balance / Math.max(1, daysLeft);
+  const dailySpend  = dayOfMonth > 0 ? expense / dayOfMonth : 0;
+  const monthPct    = (dayOfMonth / daysInMonth) * 100;
+  const spendPct    = income > 0 ? (expense / income) * 100 : 0;
 
   return (
     <div style={{ padding: "0 16px 100px", display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Recurring Reminder */}
+      <RecurringReminder payments={payments||[]} transactions={transactions} setTransactions={setTransactions} accounts={accounts}/>
       {/* Daily Reminder */}
       <DailyReminder transactions={transactions} onAddTx={onAddTx}/>
       {/* Header */}
@@ -980,7 +1137,7 @@ const Dashboard = ({ accounts, transactions, month, setMonth, onAddTx, cycleDay 
         </div>
         {/* Histogram */}
         <ResponsiveContainer width="100%" height={110}>
-          <BarChart data={HIST_DATA} barGap={4}>
+          <BarChart data={histData} barGap={4}>
             <XAxis dataKey="m" tick={{ fill: "#475569", fontSize: 10, fontFamily: "'DM Mono', monospace" }} axisLine={false} tickLine={false}/>
             <Tooltip
               contentStyle={{ background: "#0d1628", border: "1px solid #1a2744", borderRadius: 10, fontFamily: "'Space Grotesk', sans-serif", fontSize: 12 }}
@@ -996,30 +1153,92 @@ const Dashboard = ({ accounts, transactions, month, setMonth, onAddTx, cycleDay 
       {/* Weekly summary + forecast */}
       <WeeklySummary transactions={transactions} month={month} cycleDay={cycleDay}/>
 
-      {/* Category breakdown */}
-      <Card style={{ padding: "20px" }}>
-        <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b" }}>Wydatki wg kategorii</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {topCats.map(({ cat, val, label, color, icon: Icon }) => {
-            const pct = expense > 0 ? (val / expense) * 100 : 0;
-            return (
-              <div key={cat}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <div style={{ background: color + "22", border: `1px solid ${color}44`, borderRadius: 8, padding: 5, display: "flex" }}>
-                      <Icon size={13} color={color}/>
-                    </div>
-                    <span style={{ fontSize: 13, fontWeight: 500 }}>{label}</span>
-                  </div>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, color }}>{fmt(val)}</span>
-                </div>
-                <div style={{ background: "#1a2744", borderRadius: 4, height: 4 }}>
-                  <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: 4, transition: "width 0.6s ease" }}/>
-                </div>
-              </div>
-            );
-          })}
+      {/* Balance widget */}
+      <Card style={{ padding: "16px 18px" }}>
+        <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+          Stan na dziś · {daysLeft} dni do końca miesiąca
         </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
+          {[
+            { label: "Dzienne wydatki", val: dailySpend, color: dailySpend > dailyBudget * 1.2 ? "#ef4444" : dailySpend > dailyBudget ? "#f59e0b" : "#10b981", prefix: "" },
+            { label: "Dzienny budżet",  val: dailyBudget, color: "#60a5fa", prefix: "" },
+          ].map(({ label, val, color, prefix }) => (
+            <div key={label} style={{ background: "#060b14", borderRadius: 10, padding: "10px 12px" }}>
+              <div style={{ fontSize: 10, color: "#475569", fontWeight: 600, textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 16, fontWeight: 700, color }}>{prefix}{fmt(val)}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: "#475569", marginBottom: 6, display: "flex", justifyContent: "space-between" }}>
+          <span>Wydano {spendPct.toFixed(0)}% przychodów</span>
+          <span style={{ color: balance >= 0 ? "#10b981" : "#ef4444", fontWeight: 700 }}>
+            {balance >= 0 ? "zostalo " : "przekroczono "}{fmt(Math.abs(balance))}
+          </span>
+        </div>
+        <div style={{ background: "#060b14", borderRadius: 6, height: 6, overflow: "hidden" }}>
+          <div style={{ width: `${Math.min(100, spendPct)}%`, height: "100%", borderRadius: 6,
+            background: spendPct > 100 ? "#ef4444" : spendPct > 80 ? "#f59e0b" : "#10b981",
+            transition: "width 0.6s" }}/>
+        </div>
+      </Card>
+
+      {/* Category breakdown   wydatki & wp ywy */}
+      <Card style={{ padding: "18px 18px 14px" }}>
+        <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
+          {[["expense","📉 Wydatki"],["income","📈 Wpływy"]].map(([t,l]) => (
+            <button key={t} onClick={() => setCatTab(t)} style={{
+              flex: 1, padding: "7px 0", borderRadius: 10, cursor: "pointer",
+              fontWeight: 700, fontSize: 12, fontFamily: "'Space Grotesk', sans-serif",
+              background: catTab === t ? (t === "expense" ? "#2d0a0a" : "#0a1e12") : "#060b14",
+              border: `1px solid ${catTab === t ? (t === "expense" ? "#ef4444" : "#10b981") : "#1a2744"}`,
+              color: catTab === t ? (t === "expense" ? "#ef4444" : "#10b981") : "#475569",
+            }}>{l}</button>
+          ))}
+        </div>
+        {catTab === "expense" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {topCats.length === 0 && <div style={{ color: "#334155", fontSize: 12, textAlign: "center", padding: 16 }}>Brak wydatków</div>}
+            {topCats.map(({ cat, val, label, color, icon: Icon }) => {
+              const pct = expense > 0 ? (val / expense) * 100 : 0;
+              return (
+                <div key={cat}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ background: color+"22", border: `1px solid ${color}44`, borderRadius: 8, padding: 5, display: "flex" }}><Icon size={13} color={color}/></div>
+                      <span style={{ fontSize: 13, fontWeight: 500 }}>{label}</span>
+                    </div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, color }}>{fmt(val)}</span>
+                  </div>
+                  <div style={{ background: "#1a2744", borderRadius: 4, height: 4 }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: color, borderRadius: 4, transition: "width 0.6s ease" }}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {catTab === "income" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {incomeData.length === 0 && <div style={{ color: "#334155", fontSize: 12, textAlign: "center", padding: 16 }}>Brak wpływów</div>}
+            {incomeData.map(({ cat, val, label, color, icon: Icon }) => {
+              const pct = income > 0 ? (val / income) * 100 : 0;
+              return (
+                <div key={cat}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 5 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ background: color+"22", border: `1px solid ${color}44`, borderRadius: 8, padding: 5, display: "flex" }}><Icon size={13} color={color}/></div>
+                      <span style={{ fontSize: 13, fontWeight: 500 }}>{label}</span>
+                    </div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, color: "#10b981" }}>{fmt(val)}</span>
+                  </div>
+                  <div style={{ background: "#1a2744", borderRadius: 4, height: 4 }}>
+                    <div style={{ width: `${pct}%`, height: "100%", background: "#10b981", borderRadius: 4, transition: "width 0.6s ease" }}/>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </Card>
 
       {/* Pie chart */}
@@ -1044,6 +1263,28 @@ const Dashboard = ({ accounts, transactions, month, setMonth, onAddTx, cycleDay 
               </div>
             ))}
           </div>
+        </div>
+      </Card>
+
+      {/* Account balance history (simple) */}
+      <Card>
+        <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.08em", color: "#64748b" }}>Historia sald</div>
+        <ResponsiveContainer width="100%" height={120}>
+          <LineChart data={histData}>
+            <XAxis dataKey="m" tick={{ fill: "#475569", fontSize: 10 }} axisLine={false} tickLine={false}/>
+            <Tooltip contentStyle={{ background: "#0d1628", border: "1px solid #1a2744", borderRadius: 10, fontSize: 12 }}
+              formatter={(v, n) => [fmt(Math.abs(v)), n === "balance" ? "Bilans" : n]}/>
+            <Line type="monotone" dataKey="balance" stroke="#10b981" strokeWidth={2} dot={{ fill: "#10b981", r: 3 }}/>
+            <Line type="monotone" dataKey="income"  stroke="#3b82f6" strokeWidth={1.5} dot={false} strokeDasharray="4 2"/>
+          </LineChart>
+        </ResponsiveContainer>
+        <div style={{ display: "flex", gap: 16, marginTop: 8, justifyContent: "center" }}>
+          {[["#10b981","Bilans"],["#3b82f6","Przychody"]].map(([c,l]) => (
+            <div key={l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 12, height: 3, background: c, borderRadius: 2 }}/>
+              <span style={{ fontSize: 10, color: "#475569" }}>{l}</span>
+            </div>
+          ))}
         </div>
       </Card>
 
@@ -1154,26 +1395,8 @@ const AccountsView = ({ accounts, setAccounts }) => {
 
   return (
     <div style={{ padding: "0 16px 100px" }}>
-      {/* Top summary */}
-      <div style={{ paddingTop: 8, paddingBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div>
-          <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Łączny majątek</div>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 26, fontWeight: 500, marginTop: 2 }}>{fmt(total)}</div>
-          <div style={{ display: "flex", gap: 14, marginTop: 6, flexWrap: "wrap" }}>
-            {oszcz.length > 0 && <div style={{ fontSize: 11, color: "#64748b" }}>
-              Oszcz: <span style={{ color: "#06b6d4", fontWeight: 700, fontFamily: "'DM Mono', monospace" }}>{fmt(totalOszcz)}</span>
-            </div>}
-            {inwest.length > 0 && <div style={{ fontSize: 11, color: "#64748b" }}>
-              Inwest: <span style={{ color: "#8b5cf6", fontWeight: 700, fontFamily: "'DM Mono', monospace" }}>{fmt(totalInwest)}</span>
-            </div>}
-          </div>
-        </div>
-        <button onClick={openAdd} style={{ background: "#1e3a5f", border: "1px solid #2563eb44", color: "#60a5fa", borderRadius: 12, padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontSize: 13, fontWeight: 600 }}>
-          <PlusCircle size={14}/> Dodaj
-        </button>
-      </div>
 
-      {/* Konta bieżące — tylko jeśli istnieją */}
+      {/* Konta bie  ce   tylko je li istniej  */}
       {biezace.length > 0 && <>
         <SectionHeader label="💳 Konta bieżące" total={totalBiezace} color="#3b82f6"/>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
@@ -1181,7 +1404,7 @@ const AccountsView = ({ accounts, setAccounts }) => {
         </div>
       </>}
 
-      {/* Konta oszczędnościowe */}
+      {/* Konta oszcz dno ciowe */}
       {oszcz.length > 0 && <>
         <SectionHeader label="🏦 Oszczędności" total={totalOszcz} color="#06b6d4"/>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 24 }}>
@@ -1224,15 +1447,14 @@ const AccountsView = ({ accounts, setAccounts }) => {
 };
 
 
-const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts, _forceOpenModal, _onClose, _onModalClose }) => {
+const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts, allCats, _forceOpenModal, _onClose, _onModalClose }) => {
   const [modal, setModal] = useState(_forceOpenModal || false);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [filterCat, setFilterCat] = useState("all");
-  const [expandedTx, setExpandedTx] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
-  const [form, setForm] = useState({ date: new Date().toISOString().split("T")[0], desc: "", amount: "", cat: "jedzenie", acc: 1, type: "expense", tags: "", splitWith: "", splitPct: "50" });
+  const [form, setForm] = useState({ date: new Date().toISOString().split("T")[0], desc: "", amount: "", cat: "jedzenie", acc: 1, toAcc: 2, type: "expense", currency: "PLN" });
 
   const addTx = () => {
     if (!form.desc || !form.amount) return;
@@ -1240,19 +1462,38 @@ const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts
     const finalCat = form.type === "income"
       ? (incomeCategories.includes(form.cat) ? form.cat : "przychód")
       : form.cat;
-    // Handle split: only pay your share
-    let rawAmt = Math.abs(parseFloat(form.amount));
-    if (form.splitWith && form.splitWith.trim() !== "") {
-      rawAmt = rawAmt * (parseFloat(form.splitPct) / 100);
+    const RATES = { EUR: 4.28, USD: 3.92, GBP: 5.02, CZK: 0.172, HUF: 0.011, PLN: 1 };
+    const rate   = RATES[form.currency] || 1;
+    const rawAmt = Math.abs(parseFloat(form.amount)) * rate;
+
+    // Internal transfer: create two transactions
+    if (form.type === "transfer" && form.toAcc && parseInt(form.toAcc) !== parseInt(form.acc)) {
+      const fromId = parseInt(form.acc);
+      const toId   = parseInt(form.toAcc);
+      const txOut  = { id: Date.now(),     date: form.date, desc: `Przelew → ${(accounts.find(a=>a.id===toId)||{name:toId}).name}`, amount: -rawAmt, cat: "inne", acc: fromId };
+      const txIn   = { id: Date.now()+1,   date: form.date, desc: `Przelew ← ${(accounts.find(a=>a.id===fromId)||{name:fromId}).name}`, amount: rawAmt,  cat: "inne", acc: toId  };
+      setTransactions(tx => [txIn, txOut, ...tx]);
+      if (setAccounts) {
+        setAccounts(accs => accs.map(a => {
+          if (a.id === fromId) return { ...a, balance: parseFloat((a.balance - rawAmt).toFixed(2)) };
+          if (a.id === toId)   return { ...a, balance: parseFloat((a.balance + rawAmt).toFixed(2)) };
+          return a;
+        }));
+      }
+      setForm(f => ({ ...f }));
+      setModal(false);
+      if (_onModalClose) _onModalClose();
+      return;
     }
-    const amt = form.type === "expense" ? -rawAmt : rawAmt;
-    const tags = form.tags ? form.tags.split(/[,\s]+/).map(t => t.replace(/^#/,"").trim()).filter(Boolean) : [];
-    const txData = { date: form.date, desc: form.desc + (form.splitWith ? ` (podział z ${form.splitWith})` : ""), amount: parseFloat(amt.toFixed(2)), cat: finalCat, acc: parseInt(form.acc), tags };
+
+    const amt    = form.type === "expense" ? -rawAmt : rawAmt;
+    const txData = { date: form.date, desc: form.desc, amount: parseFloat(amt.toFixed(2)), cat: finalCat, acc: parseInt(form.acc) };
     if (editingId) {
       // reverse old tx on old account, apply new tx on new account
       const oldTx = transactions.find(t => t.id === editingId);
       if (oldTx && setAccounts) {
         setAccounts(accs => accs.map(a => {
+          if (a.type === "invest") return a; // skip invest accounts
           if (a.id === oldTx.acc && a.id === txData.acc)
             return { ...a, balance: parseFloat((a.balance - oldTx.amount + txData.amount).toFixed(2)) };
           if (a.id === oldTx.acc)
@@ -1265,17 +1506,17 @@ const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts
       setTransactions(tx => tx.map(t => t.id === editingId ? { ...t, ...txData } : t));
       setEditingId(null);
     } else {
-      // apply amount to linked account
+      // apply amount to linked account (only savings/checking, not invest)
       if (setAccounts) {
-        setAccounts(accs => accs.map(a =>
-          a.id === txData.acc
-            ? { ...a, balance: parseFloat((a.balance + txData.amount).toFixed(2)) }
-            : a
-        ));
+        setAccounts(accs => accs.map(a => {
+          if (a.id !== txData.acc) return a;
+          if (a.type === "invest") return a; // investment accounts managed separately
+          return { ...a, balance: parseFloat((a.balance + txData.amount).toFixed(2)) };
+        }));
       }
       setTransactions(tx => [{ id: Date.now(), ...txData }, ...tx]);
     }
-    setForm(f => ({ ...f, tags: "", splitWith: "", splitPct: "50" }));
+    setForm(f => ({ ...f, currency: 'PLN' }));
     setModal(false);
     if (_onModalClose) _onModalClose();
   };
@@ -1285,7 +1526,7 @@ const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts
     .filter(t => filterCat === "all" ? true : t.cat === filterCat)
     .filter(t => search === "" ? true :
       t.desc.toLowerCase().includes(search.toLowerCase()) ||
-      (t.tags||[]).some(tag => tag.toLowerCase().includes(search.toLowerCase())) ||
+
       getCat(t.cat).label.toLowerCase().includes(search.toLowerCase())
     );
 
@@ -1328,7 +1569,7 @@ const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts
               <button onClick={() => setFilterCat("all")} style={{ background: filterCat === "all" ? "#1e3a5f" : "#0d1628", border: `1px solid ${filterCat === "all" ? "#2563eb" : "#1a2744"}`, color: filterCat === "all" ? "#60a5fa" : "#64748b", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap", flexShrink: 0 }}>
                 Wszystkie
               </button>
-              {CATEGORIES.map(c => (
+              {(allCats||CATEGORIES).map(c => (
                 <button key={c.id} onClick={() => setFilterCat(c.id)} style={{ background: filterCat === c.id ? c.color+"33" : "#0d1628", border: `1px solid ${filterCat === c.id ? c.color : "#1a2744"}`, color: filterCat === c.id ? c.color : "#64748b", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 11, fontWeight: 600, whiteSpace: "nowrap", flexShrink: 0 }}>
                   {c.label}
                 </button>
@@ -1347,113 +1588,93 @@ const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {grouped.map(([date, txs]) => (
           <div key={date}>
-            <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>{date}</div>
+            {(() => {
+              const dayTotal = txs.filter(t => t.cat !== "inne").reduce((s,t) => s + t.amount, 0);
+              const dayExp   = txs.filter(t => t.amount < 0 && t.cat !== "inne").reduce((s,t) => s + Math.abs(t.amount), 0);
+              return (
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.08em" }}>{date}</div>
+                  {dayExp > 0 && (
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, fontWeight: 700,
+                      color: dayTotal >= 0 ? "#10b981" : "#ef4444" }}>
+                      {dayTotal >= 0 ? "+" : "−"}{fmt(Math.abs(dayTotal))}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             <Card style={{ padding: "4px 16px" }}>
               {txs.map((tx, i) => {
                 const cat = getCat(tx.cat);
                 const Icon = cat.icon;
                 const acc = accounts.find(a => a.id === tx.acc);
-                const isExpanded = expandedTx === tx.id;
                 return (
-                  <div key={tx.id}>
-                    {/* Main row — tap to expand actions */}
-                    <div
-                      onClick={() => setExpandedTx(isExpanded ? null : tx.id)}
-                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "11px 0",
-                               borderBottom: (!isExpanded && i < txs.length-1) ? "1px solid #0f1a2e" : "none",
-                               cursor: "pointer", userSelect: "none" }}>
-                      <div style={{ background: cat.color + "1a", borderRadius: 10, padding: 8, flexShrink: 0 }}>
-                        <Icon size={14} color={cat.color}/>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tx.desc}</div>
-                        <div style={{ fontSize: 11, color: "#475569", marginTop: 2, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                          <span>{cat.label}</span>
-                          {acc && <><span>·</span><span style={{ color: acc.color }}>{acc.name}</span></>}
-                          {(tx.tags||[]).map(tag => (
-                            <span key={tag} onClick={(e) => { e.stopPropagation(); setSearch("#"+tag); setShowSearch(true); }}
-                              style={{ background: "#1e3a5f", color: "#60a5fa", borderRadius: 5, padding: "1px 6px", fontSize: 10, fontWeight: 600, cursor: "pointer" }}>
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 600,
-                                    color: tx.amount > 0 ? "#10b981" : "#ef4444", flexShrink: 0 }}>
-                        {tx.amount > 0 ? "+" : "−"}{fmt(Math.abs(tx.amount))}
+                  <div key={tx.id} style={{
+                    display: "flex", alignItems: "center", gap: 10, padding: "10px 0",
+                    borderBottom: i < txs.length-1 ? "1px solid #0f1a2e" : "none",
+                  }}>
+                    {/* Icon */}
+                    <div style={{ background: cat.color+"1a", borderRadius: 10, padding: 8, flexShrink: 0 }}>
+                      <Icon size={14} color={cat.color}/>
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{tx.desc}</div>
+                      <div style={{ fontSize: 11, color: "#475569", marginTop: 2, display: "flex", alignItems: "center", gap: 5 }}>
+                        <span>{cat.label}</span>
+                        {acc && <><span>·</span><span style={{ color: acc.color }}>{acc.name}</span></>}
                       </div>
                     </div>
 
-                    {/* Expanded action bar */}
-                    {isExpanded && (
-                      <div style={{ display: "flex", gap: 8, padding: "8px 0 12px",
-                                    borderBottom: i < txs.length-1 ? "1px solid #0f1a2e" : "none" }}>
-                        {/* Copy — opens modal pre-filled, today's date */}
-                        <button
-                          onClick={() => {
-                            setForm({
-                              date: new Date().toISOString().split("T")[0],
-                              desc: tx.desc,
-                              amount: String(Math.abs(tx.amount)),
-                              cat: tx.cat === "przychód" || tx.cat === "sprzedaż" || tx.cat === "kiga" || tx.cat === "bukmacherka" ? tx.cat : tx.cat,
-                              acc: tx.acc,
-                              type: tx.amount > 0 ? "income" : "expense",
-                            });
-                            setExpandedTx(null);
-                            setModal(true);
-                          }}
-                          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                                   background: "#0d1e35", border: "1px solid #1e3a5f",
-                                   borderRadius: 10, padding: "9px 0", cursor: "pointer",
-                                   color: "#60a5fa", fontSize: 12, fontWeight: 700,
-                                   fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Copy size={13}/> Kopiuj
-                        </button>
+                    {/* Amount */}
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 600,
+                      color: tx.amount > 0 ? "#10b981" : "#ef4444", flexShrink: 0 }}>
+                      {tx.amount > 0 ? "+" : "−"}{fmt(Math.abs(tx.amount))}
+                    </div>
 
-                        {/* Edit — opens modal pre-filled with same date */}
-                        <button
-                          onClick={() => {
-                            setForm({
-                              date: tx.date,
-                              desc: tx.desc,
-                              amount: String(Math.abs(tx.amount)),
-                              cat: tx.cat,
-                              acc: tx.acc,
-                              type: tx.amount > 0 ? "income" : "expense",
-                            });
-                            setEditingId(tx.id);
-                            setExpandedTx(null);
-                            setModal(true);
-                          }}
-                          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                                   background: "#0d1e2a", border: "1px solid #1e3a2f",
-                                   borderRadius: 10, padding: "9px 0", cursor: "pointer",
-                                   color: "#34d399", fontSize: 12, fontWeight: 700,
-                                   fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Edit2 size={13}/> Edytuj
-                        </button>
-
-                        {/* Delete */}
-                        <button
-                          onClick={() => {
-                            // reverse amount on linked account
-                            setAccounts(accs => accs.map(a =>
-                              a.id === tx.acc
-                                ? { ...a, balance: parseFloat((a.balance - tx.amount).toFixed(2)) }
-                                : a
-                            ));
-                            setTransactions(t => t.filter(x => x.id !== tx.id));
-                            setExpandedTx(null);
-                          }}
-                          style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                                   background: "#1a0808", border: "1px solid #7f1d1d44",
-                                   borderRadius: 10, padding: "9px 0", cursor: "pointer",
-                                   color: "#f87171", fontSize: 12, fontWeight: 700,
-                                   fontFamily: "'Space Grotesk', sans-serif" }}>
-                          <Trash2 size={13}/> Usuń
-                        </button>
-                      </div>
-                    )}
+                    {/* Action buttons   always visible */}
+                    <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                      <button
+                        onClick={() => {
+                          setForm({ date: new Date().toISOString().split("T")[0], desc: tx.desc,
+                            amount: String(Math.abs(tx.amount)), cat: tx.cat, acc: tx.acc,
+                            type: tx.amount > 0 ? "income" : "expense" });
+                          setModal(true);
+                        }}
+                        title="Kopiuj"
+                        style={{ background: "#0d1628", border: "1px solid #1a2744", borderRadius: 7,
+                          padding: "5px 7px", cursor: "pointer", color: "#475569" }}>
+                        <Copy size={12}/>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setForm({ date: tx.date, desc: tx.desc,
+                            amount: String(Math.abs(tx.amount)), cat: tx.cat, acc: tx.acc,
+                            type: tx.amount > 0 ? "income" : "expense" });
+                          setEditingId(tx.id);
+                          setModal(true);
+                        }}
+                        title="Edytuj"
+                        style={{ background: "#0d1628", border: "1px solid #1a2744", borderRadius: 7,
+                          padding: "5px 7px", cursor: "pointer", color: "#60a5fa" }}>
+                        <Edit2 size={12}/>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setAccounts(accs => accs.map(a =>
+                            a.id === tx.acc && a.type !== "invest"
+                              ? { ...a, balance: parseFloat((a.balance - tx.amount).toFixed(2)) }
+                              : a
+                          ));
+                          setTransactions(t => t.filter(x => x.id !== tx.id));
+                        }}
+                        title="Usuń"
+                        style={{ background: "#0d1628", border: "1px solid #1a2744", borderRadius: 7,
+                          padding: "5px 7px", cursor: "pointer", color: "#f87171" }}>
+                        <Trash2 size={12}/>
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -1464,39 +1685,143 @@ const TransactionsView = ({ transactions, setTransactions, accounts, setAccounts
 
       <Modal open={modal} onClose={() => { setModal(false); setEditingId(null); }} title={editingId ? "Edytuj transakcję" : "Nowa transakcja"}>
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-          {[["expense","Wydatek","#ef4444"],["income","Przychód","#10b981"]].map(([v,l,c]) => (
-            <button key={v} onClick={() => setForm(f => ({...f, type: v}))} style={{ flex: 1, background: form.type === v ? c + "22" : "#060b14", border: `1px solid ${form.type === v ? c : "#1a2744"}`, color: form.type === v ? c : "#64748b", borderRadius: 10, padding: 10, cursor: "pointer", fontWeight: 700, fontSize: 13, fontFamily: "'Space Grotesk', sans-serif" }}>
+          {[["expense","📤 Wydatek","#ef4444"],["income","📥 Przychód","#10b981"],["transfer","🔄 Przelew","#60a5fa"]].map(([v,l,c]) => (
+            <button key={v} onClick={() => setForm(f => ({...f, type: v}))} style={{ flex: 1, background: form.type === v ? c + "22" : "#060b14", border: `1px solid ${form.type === v ? c : "#1a2744"}`, color: form.type === v ? c : "#64748b", borderRadius: 10, padding: 10, cursor: "pointer", fontWeight: 700, fontSize: 12, fontFamily: "'Space Grotesk', sans-serif" }}>
               {l}
             </button>
           ))}
         </div>
-        <Input label="Opis" value={form.desc} onChange={e => setForm(f => ({...f, desc: e.target.value}))} placeholder="np. Biedronka"/>
-        <Input label="Kwota (zł)" type="number" value={form.amount} onChange={e => setForm(f => ({...f, amount: e.target.value}))} placeholder="0.00"/>
-        <Input label="Data" type="date" value={form.date} onChange={e => setForm(f => ({...f, date: e.target.value}))}/>
-        {form.type === "expense" && (
-          <Select label="Kategoria" value={form.cat} onChange={e => setForm(f => ({...f, cat: e.target.value}))}>
-            {CATEGORIES.filter(c => c.id !== "przychód").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
-          </Select>
-        )}
-        <Select label="Konto" value={form.acc} onChange={e => setForm(f => ({...f, acc: e.target.value}))}>
-          {accounts.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-        </Select>
-        <Input label="Tagi (opcjonalne, oddziel przecinkiem)" value={form.tags||""} onChange={e => setForm(f => ({...f, tags: e.target.value}))} placeholder="#wakacje #laura #praca"/>
+        {/* Description with autocomplete */}
+        <div style={{ marginBottom: 14, position: "relative" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginBottom: 6,
+            textTransform: "uppercase", letterSpacing: "0.08em" }}>Opis</div>
+          <input
+            value={form.desc}
+            onChange={e => setForm(f => ({...f, desc: e.target.value}))}
+            placeholder="np. Biedronka"
+            autoComplete="off"
+            style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+              borderRadius: 10, padding: "12px 14px", color: "#e2e8f0", fontSize: 16,
+              fontFamily: "'Space Grotesk', sans-serif", outline: "none", WebkitAppearance: "none" }}
+          />
+          {/* Suggestions */}
+          {form.desc.length >= 2 && (() => {
+            const q = form.desc.toLowerCase();
+            const seen = new Set();
+            const suggestions = transactions
+              .map(t => t.desc)
+              .filter(d => {
+                if (d.toLowerCase() === form.desc.toLowerCase()) return false;
+                if (!d.toLowerCase().includes(q)) return false;
+                if (seen.has(d)) return false;
+                seen.add(d);
+                return true;
+              })
+              .slice(0, 5);
+            if (suggestions.length === 0) return null;
+            return (
+              <div style={{ position: "absolute", top: "100%", left: 0, right: 0, zIndex: 50,
+                background: "#0d1628", border: "1px solid #1a2744", borderRadius: 10,
+                marginTop: 4, overflow: "hidden", boxShadow: "0 8px 24px #00000066" }}>
+                {suggestions.map(s => {
+                  // find last transaction with this desc to pre-fill cat & acc
+                  const prev = transactions.find(t => t.desc === s);
+                  return (
+                    <button key={s} onClick={() => setForm(f => ({
+                      ...f, desc: s,
+                      cat: (prev ? prev.cat : null) || f.cat,
+                      acc: (prev ? prev.acc : null) || f.acc,
+                      type: prev ? (prev.amount > 0 ? "income" : "expense") : f.type,
+                    }))} style={{
+                      width: "100%", background: "none", border: "none",
+                      borderBottom: "1px solid #0f1a2e", padding: "11px 14px",
+                      cursor: "pointer", textAlign: "left", display: "flex",
+                      alignItems: "center", justifyContent: "space-between",
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = "#1a2744"}
+                    onMouseLeave={e => e.currentTarget.style.background = "none"}>
+                      <span style={{ fontSize: 14, color: "#e2e8f0" }}>{s}</span>
+                      {prev && <span style={{ fontSize: 11, color: "#475569" }}>{getCat(prev.cat).label}</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          })()}
+        </div>
+        {/* Amount + currency converter */}
         <div style={{ marginBottom: 14 }}>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>Podział kosztów (opcjonalne)</div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginBottom: 6,
+            textTransform: "uppercase", letterSpacing: "0.08em" }}>Kwota</div>
           <div style={{ display: "flex", gap: 8 }}>
-            <input value={form.splitWith||""} onChange={e => setForm(f => ({...f, splitWith: e.target.value}))} placeholder="z kim? (np. Laura)" style={{ flex: 2, background: "#060b14", border: "1px solid #1a2744", borderRadius: 10, padding: "10px 12px", color: "#e2e8f0", fontSize: 16, fontFamily: "'Space Grotesk', sans-serif", outline: "none", WebkitAppearance: "none" }}/>
-            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 4, background: "#060b14", border: "1px solid #1a2744", borderRadius: 10, padding: "0 12px" }}>
-              <input type="number" min="1" max="99" value={form.splitPct||"50"} onChange={e => setForm(f => ({...f, splitPct: e.target.value}))} style={{ width: 40, background: "none", border: "none", color: "#60a5fa", fontSize: 16, fontWeight: 700, outline: "none", fontFamily: "'DM Mono', monospace", WebkitAppearance: "none" }}/>
-              <span style={{ color: "#475569", fontSize: 13 }}>%</span>
-            </div>
+            <input type="number" value={form.amount}
+              onChange={e => setForm(f => ({...f, amount: e.target.value}))}
+              placeholder="0.00"
+              style={{ flex: 2, background: "#060b14", border: "1px solid #1a2744", borderRadius: 10,
+                padding: "12px 14px", color: "#e2e8f0", fontSize: 16,
+                fontFamily: "'Space Grotesk', sans-serif", outline: "none", WebkitAppearance: "none" }}/>
+            <select value={form.currency || "PLN"}
+              onChange={e => setForm(f => ({...f, currency: e.target.value}))}
+              style={{ flex: 1, background: "#060b14", border: "1px solid #1a2744", borderRadius: 10,
+                padding: "12px 10px", color: form.currency && form.currency !== "PLN" ? "#f59e0b" : "#e2e8f0",
+                fontSize: 15, fontWeight: 700, outline: "none", fontFamily: "'DM Mono', monospace" }}>
+              <option value="PLN">PLN</option>
+              <option value="EUR">EUR</option>
+              <option value="USD">USD</option>
+              <option value="GBP">GBP</option>
+              <option value="CZK">CZK</option>
+              <option value="HUF">HUF</option>
+            </select>
           </div>
-          {form.splitWith && form.amount && (
-            <div style={{ marginTop: 6, fontSize: 11, color: "#f59e0b" }}>
-              Twoja część: {(parseFloat(form.amount||0) * parseFloat(form.splitPct||50) / 100).toFixed(2)} zł
+          {/* Currency conversion preview */}
+          {form.currency && form.currency !== "PLN" && form.amount && (() => {
+            const rates = { EUR: 4.28, USD: 3.92, GBP: 5.02, CZK: 0.172, HUF: 0.011 };
+            const rate  = rates[form.currency] || 1;
+            const pln   = (parseFloat(form.amount) * rate).toFixed(2);
+            return (
+              <div style={{ marginTop: 6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 12, color: "#475569" }}>
+                  {form.amount} {form.currency} × {rate} =
+                </span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 14, fontWeight: 700, color: "#f59e0b" }}>
+                  {pln} PLN
+                </span>
+              </div>
+            );
+          })()}
+          {/* Rate note */}
+          {form.currency && form.currency !== "PLN" && (
+            <div style={{ fontSize: 10, color: "#334155", marginTop: 4 }}>
+              Kurs przybliżony · kwota zapisze się w PLN
             </div>
           )}
         </div>
+        <Input label="Data" type="date" value={form.date} onChange={e => setForm(f => ({...f, date: e.target.value}))}/>
+        {form.type === "expense" && (
+          <Select label="Kategoria" value={form.cat} onChange={e => setForm(f => ({...f, cat: e.target.value}))}>
+            <option disabled>── Ważne</option>
+            {(allCats||CATEGORIES).filter(c => c.group === "essential" && c.id !== "przychód").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+            <option disabled>── Dodatkowe</option>
+            {(allCats||CATEGORIES).filter(c => (c.group === "lifestyle" || !c.group) && c.id !== "przychód" && c.id !== "inne").map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+            <option disabled>── Inne</option>
+            <option value="inne">Inne</option>
+          </Select>
+        )}
+        <Select label={form.type === "transfer" ? "Z konta" : "Konto"} value={form.acc} onChange={e => setForm(f => ({...f, acc: e.target.value}))}>
+          {[...accounts].sort((a,b) => {
+            const order = { checking: 0, savings: 1, invest: 2 };
+            return (order[a.type]||1) - (order[b.type]||1);
+          }).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+        </Select>
+        {form.type === "transfer" && (
+          <Select label="Na konto" value={form.toAcc} onChange={e => setForm(f => ({...f, toAcc: e.target.value}))}>
+            {[...accounts].filter(a => a.id !== parseInt(form.acc)).sort((a,b) => {
+              const order = { checking: 0, savings: 1, invest: 2 };
+              return (order[a.type]||1) - (order[b.type]||1);
+            }).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+          </Select>
+        )}
+
         <button onClick={addTx} style={{ width: "100%", background: "linear-gradient(135deg, #1e40af, #3b82f6)", border: "none", borderRadius: 12, padding: 14, color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif" }}>
           {editingId ? "Zapisz zmiany" : "Zapisz transakcję"}
         </button>
@@ -1625,10 +1950,8 @@ const InvestmentsView = ({ accounts }) => {
 
   const chartData = XTB_PORTFOLIO.map(p => ({ name: p.ticker, value: p.valuePLN }));
 
-  const histPerf = [
-    { m: "Paź", val: 10200 },{ m: "Lis", val: 10800 },{ m: "Gru", val: 9900 },
-    { m: "Sty", val: 11100 },{ m: "Lut", val: 11600 },{ m: "Mar", val: totalValue },
-  ];
+  // Build from real XTB portfolio total   only current value is real, rest placeholder
+  const histPerf = [{ m: "Teraz", val: totalValue }];
 
   const PositionCard = ({ p }) => {
     const color = COLORS[p.ticker] || "#64748b";
@@ -1733,7 +2056,7 @@ const InvestmentsView = ({ accounts }) => {
         </div>
       </Card>
 
-      {/* Positions — Zwykłe */}
+      {/* Positions   Zwyk e */}
       <div style={{ fontSize: 11, fontWeight: 700, color: "#8b5cf6", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>
         Konto inwestycyjne · {fmt(zwykleVal)}
       </div>
@@ -1741,7 +2064,7 @@ const InvestmentsView = ({ accounts }) => {
         {zwykle.map(p => <PositionCard key={p.ticker} p={p}/>)}
       </div>
 
-      {/* Positions — IKZE */}
+      {/* Positions   IKZE */}
       <div style={{ fontSize: 11, fontWeight: 700, color: "#f59e0b", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>
         IKZE · {fmt(ikzeVal)}
       </div>
@@ -1753,12 +2076,80 @@ const InvestmentsView = ({ accounts }) => {
 };
 
 
-// ── WEEKLY SUMMARY + FORECAST ─────────────────────────────────────────────────
+
+//    RECURRING REMINDER                                                         
+const RecurringReminder = ({ payments, transactions, setTransactions, accounts }) => {
+  const today     = new Date();
+  const todayStr  = today.toISOString().split("T")[0];
+  const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay(); // 1=Mon..7=Sun
+  const dayOfMonth = today.getDate();
+  const [dismissed, setDismissed] = useState({});
+
+  // Find recurring payments due today (weekly by weekday, monthly by day)
+  const dueToday = payments.filter(p => {
+    if (dismissed[p.id]) return false;
+    if (p.freq === "daily") return true;
+    if (p.freq === "weekly") return p.dayOfWeek === dayOfWeek;
+    if (p.freq === "monthly" || p.freq === "bimonthly") return (p.dueDay || p.dayOfMonth || 1) === dayOfMonth;
+    return false;
+  });
+
+  // Check which ones already have a transaction today
+  const notYetAdded = dueToday.filter(p =>
+    !transactions.some(t => t.desc === p.name && t.date === todayStr && t.amount === p.amount)
+  );
+
+  if (notYetAdded.length === 0) return null;
+
+  const addNow = (p) => {
+    setTransactions(tx => [{ id: Date.now(), date: todayStr, desc: p.name, amount: p.amount, cat: p.cat, acc: p.acc }, ...tx]);
+    setDismissed(d => ({ ...d, [p.id]: true }));
+  };
+
+  const dismiss = (id) => setDismissed(d => ({ ...d, [id]: true }));
+
+  return (
+    <div style={{ marginBottom: 14 }}>
+      {notYetAdded.map(p => (
+        <div key={p.id} style={{
+          background: "linear-gradient(135deg,#1a1208,#221a08)",
+          border: "1px solid #78350f",
+          borderRadius: 14, padding: "12px 14px", marginBottom: 8,
+          display: "flex", alignItems: "center", gap: 12,
+        }}>
+          <div style={{ background: "#f59e0b22", borderRadius: 10, padding: 8, flexShrink: 0 }}>
+            <RefreshCw size={15} color="#f59e0b"/>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: "#fcd34d" }}>
+              🔔 {p.name}
+            </div>
+            <div style={{ fontSize: 11, color: "#92400e", marginTop: 2 }}>
+              Dzisiejsza płatność · {fmt(Math.abs(p.amount))}
+            </div>
+          </div>
+          <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+            <button onClick={() => addNow(p)} style={{
+              background: "#f59e0b", border: "none", borderRadius: 8,
+              padding: "6px 12px", cursor: "pointer", color: "#1a0a00",
+              fontSize: 12, fontWeight: 700 }}>+ Dodaj</button>
+            <button onClick={() => dismiss(p.id)} style={{
+              background: "none", border: "1px solid #78350f44", borderRadius: 8,
+              padding: "6px 8px", cursor: "pointer", color: "#92400e",
+              fontSize: 11 }}>Pomiń</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+//    WEEKLY SUMMARY + FORECAST                                                  
 const WeeklySummary = ({ transactions, month, cycleDay }) => {
-  const today = "2026-03-23";
-  const todayDate = new Date(today);
-  const weekAgo = new Date(todayDate); weekAgo.setDate(weekAgo.getDate() - 7);
-  const twoWeeksAgo = new Date(todayDate); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+  const todayDate  = new Date();
+  const today      = todayDate.toISOString().split("T")[0];
+  const weekAgo    = new Date(todayDate); weekAgo.setDate(weekAgo.getDate() - 7);
+  const twoWeeksAgo= new Date(todayDate); twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
 
   const toStr = d => d.toISOString().split("T")[0];
   const thisWeekTx  = transactions.filter(t => t.date >= toStr(weekAgo)    && t.date <= today && t.amount < 0 && t.cat !== "inne");
@@ -1791,7 +2182,9 @@ const WeeklySummary = ({ transactions, month, cycleDay }) => {
     <Card style={{ marginBottom: 14 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em" }}>Tydzień w skrócie</div>
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#475569" }}>17–23 mar</div>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, color: "#475569" }}>
+          {toStr(weekAgo).slice(5)} - {today.slice(5)}
+        </div>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 }}>
@@ -1820,93 +2213,860 @@ const WeeklySummary = ({ transactions, month, cycleDay }) => {
   );
 };
 
-// ── GOALS VIEW ────────────────────────────────────────────────────────────────
-const GoalsView = ({ goals, setGoals, accounts }) => {
-  const [modal, setModal] = useState(false);
-  const [form, setForm] = useState({ name: "", target: "", saved: "", accId: 1, color: "#06b6d4", emoji: "🎯" });
+//    GOALS VIEW                                                                 
+//    FORECAST TAB COMPONENT                                                    
+const ForecastTab = () => {
+  const [monthly,  setMonthly]  = useState(1000);
+  const [years,    setYears]    = useState(10);
+  const [rate,     setRate]     = useState(7);
+  const [startAmt, setStartAmt] = useState(0);
 
-  const addGoal = () => {
+  const months  = years * 12;
+  const r       = rate / 100 / 12;
+  const fvStart = startAmt * Math.pow(1 + r, months);
+  const fvMthly = r > 0 ? monthly * ((Math.pow(1 + r, months) - 1) / r) : monthly * months;
+  const total    = fvStart + fvMthly;
+  const invested = startAmt + monthly * months;
+  const profit   = total - invested;
+
+  const chartData = Array.from({ length: years + 1 }, (_, i) => {
+    const m  = i * 12;
+    const fS = startAmt * Math.pow(1 + r, m);
+    const fM = r > 0 ? monthly * ((Math.pow(1 + r, m) - 1) / r) : monthly * m;
+    return { rok: i === 0 ? "Teraz" : `${i}r`, wartość: Math.round(fS + fM), wpłacono: Math.round(startAmt + monthly * m) };
+  });
+
+  const Slider = ({ label, value, onChange, min, max, step, fmtFn, color }) => (
+    <div style={{ marginBottom: 16 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+        <span style={{ fontSize: 12, color: "#64748b", fontWeight: 600 }}>{label}</span>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 14, fontWeight: 700, color }}>
+          {fmtFn ? fmtFn(value) : value}
+        </span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={value}
+        onChange={e => onChange(parseFloat(e.target.value))}
+        style={{ width: "100%", accentColor: color || "#3b82f6", cursor: "pointer" }}/>
+    </div>
+  );
+
+  return (
+    <div>
+      <Card style={{ marginBottom: 14 }}>
+        <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>Parametry</div>
+        <Slider label="Miesięczna wpłata" value={monthly} onChange={setMonthly} min={100} max={10000} step={100} fmtFn={v => fmt(v)} color="#3b82f6"/>
+        <Slider label="Czas oszczędzania" value={years} onChange={setYears} min={1} max={40} step={1} fmtFn={v => `${v} lat`} color="#8b5cf6"/>
+        <Slider label="Roczna stopa zwrotu" value={rate} onChange={setRate} min={0} max={20} step={0.5} fmtFn={v => `${v}%`} color="#10b981"/>
+        <div>
+          <div style={{ fontSize: 12, color: "#64748b", fontWeight: 600, marginBottom: 6 }}>Kwota startowa</div>
+          <input type="number" value={startAmt} onChange={e => setStartAmt(parseFloat(e.target.value)||0)}
+            style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744", borderRadius: 8,
+              padding: "10px 12px", color: "#e2e8f0", fontSize: 16, fontFamily: "'Space Grotesk', sans-serif", outline: "none" }}/>
+        </div>
+      </Card>
+
+      <Card style={{ marginBottom: 14, background: "linear-gradient(135deg,#0d1e35,#0a1628)" }}>
+        <div style={{ textAlign: "center", padding: "8px 0 16px" }}>
+          <div style={{ fontSize: 11, color: "#475569", fontWeight: 600, textTransform: "uppercase", marginBottom: 6 }}>
+            Po {years} latach będziesz mieć
+          </div>
+          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 32, fontWeight: 700, color: "#60a5fa" }}>
+            {fmt(total)}
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+          {[
+            { label: "Wpłacono",    val: invested, color: "#94a3b8" },
+            { label: "Zysk z %",   val: profit,   color: "#10b981" },
+            { label: "Miesięcznie", val: monthly,  color: "#f59e0b" },
+          ].map(({ label, val, color }) => (
+            <div key={label} style={{ background: "#060b14", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+              <div style={{ fontSize: 9, color: "#475569", fontWeight: 700, textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, fontWeight: 700, color }}>{fmt(val)}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card>
+        <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>Wzrost w czasie</div>
+        <ResponsiveContainer width="100%" height={180}>
+          <AreaChart data={chartData}>
+            <defs>
+              <linearGradient id="gWart" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity={0}/>
+              </linearGradient>
+              <linearGradient id="gWpl" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#475569" stopOpacity={0.3}/>
+                <stop offset="100%" stopColor="#475569" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+            <XAxis dataKey="rok" tick={{ fill: "#475569", fontSize: 9 }} axisLine={false} tickLine={false}/>
+            <Tooltip contentStyle={{ background: "#0d1628", border: "1px solid #1a2744", borderRadius: 10, fontSize: 12 }}
+              formatter={(v, n) => [fmt(v), n === "wartość" ? "Wartość" : "Wpłacono"]}/>
+            <Area type="monotone" dataKey="wpłacono" stroke="#475569" strokeWidth={1.5} fill="url(#gWpl)"/>
+            <Area type="monotone" dataKey="wartość"  stroke="#3b82f6" strokeWidth={2}   fill="url(#gWart)"/>
+          </AreaChart>
+        </ResponsiveContainer>
+        <div style={{ display: "flex", gap: 16, marginTop: 8, justifyContent: "center" }}>
+          {[["#3b82f6","Wartość portfela"],["#475569","Wpłacono"]].map(([c,l]) => (
+            <div key={l} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 12, height: 3, background: c, borderRadius: 2 }}/>
+              <span style={{ fontSize: 10, color: "#475569" }}>{l}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+const GoalsView = ({ goals, setGoals, accounts, budgets, setBudgets, transactions, month, cycleDay = 1, vacationArchive = [], setVacationArchive }) => {
+  const [modal,       setModal]       = useState(false);
+  const [limitModal,  setLimitModal]  = useState(false);
+  const [activeTab,   setActiveTab]   = useState("goals");
+  const [vacation, setVacation]       = useState(
+    JSON.parse(localStorage.getItem("ft_vacation") || "null") || {
+      name: "", dest: "", dateFrom: "", dateTo: "", budget: "",
+      categories: ["zakupy","jedzenie","transport","rozrywka","zdrowie"],
+      pinnedTxIds: [],
+    }
+  );
+  const saveVacation = (v) => {
+    setVacation(v);
+    localStorage.setItem("ft_vacation", JSON.stringify(v));
+  };
+  // Pre-trip filter   at component level (no hooks inside JSX)
+  const [expandedVacId, setExpandedVacId] = useState(null);
+  const [candidateFrom, setCandidateFrom] = useState(() => {
+    const stored = JSON.parse(localStorage.getItem("ft_vacation") || "null");
+    if ((stored && stored.dateFrom)) {
+      const d = new Date(stored.dateFrom);
+      d.setMonth(d.getMonth() - 3);
+      return d.toISOString().slice(0,10);
+    }
+    const d = new Date(); d.setMonth(d.getMonth() - 3);
+    return d.toISOString().slice(0,10);
+  });
+  const [candidateTo, setCandidateTo] = useState(() => {
+    const stored = JSON.parse(localStorage.getItem("ft_vacation") || "null");
+    return (stored && stored.dateFrom) || new Date().toISOString().slice(0,10);
+  });
+  const [editGoal,    setEditGoal]    = useState(null);
+  const EMPTY_FORM = { name: "", target: "", saved: "", accId: 1, color: "#06b6d4", emoji: "🎯" };
+  const [form,        setForm]        = useState(EMPTY_FORM);
+  const [limitForm,   setLimitForm]   = useState({ cat: "bukmacher", limit: "" });
+
+  //    Goals logic                                                            
+  const openAdd  = () => { setEditGoal(null); setForm(EMPTY_FORM); setModal(true); };
+  const openEdit = (goal) => {
+    setEditGoal(goal);
+    setForm({ name: goal.name, target: String(goal.target), saved: String(goal.saved), accId: goal.accId, color: goal.color, emoji: goal.emoji });
+    setModal(true);
+  };
+
+  const saveGoal = () => {
     if (!form.name || !form.target) return;
-    setGoals(g => [...g, { id: Date.now(), name: form.name, target: parseFloat(form.target), saved: parseFloat(form.saved||0), accId: parseInt(form.accId), color: form.color, emoji: form.emoji }]);
-    setForm({ name: "", target: "", saved: "", accId: 1, color: "#06b6d4", emoji: "🎯" });
+    const item = { name: form.name, target: parseFloat(form.target), saved: parseFloat(form.saved||0), accId: parseInt(form.accId), color: form.color, emoji: form.emoji };
+    if (editGoal) {
+      setGoals(g => g.map(x => x.id === editGoal.id ? { ...x, ...item } : x));
+    } else {
+      setGoals(g => [...g, { id: Date.now(), ...item }]);
+    }
     setModal(false);
   };
-
-  const updateSaved = (id, delta) => {
-    setGoals(g => g.map(goal => goal.id === id ? { ...goal, saved: Math.max(0, goal.saved + delta) } : goal));
-  };
-
-  const deleteGoal = (id) => setGoals(g => g.filter(x => x.id !== id));
-
+  const updateSaved = (id, delta) => setGoals(g => g.map(goal => goal.id === id ? { ...goal, saved: Math.max(0, goal.saved + delta) } : goal));
+  const deleteGoal  = (id) => setGoals(g => g.filter(x => x.id !== id));
   const totalTarget = goals.reduce((s,g) => s + g.target, 0);
   const totalSaved  = goals.reduce((s,g) => s + g.saved, 0);
 
+  //    Limits logic                                                           
+  // budgets array: { cat, limit, color }
+  const monthTx = cycleTxs(transactions, month, cycleDay).filter(t => t.amount < 0);
+
+  const spentBycat = {};
+  monthTx.forEach(t => { spentBycat[t.cat] = (spentBycat[t.cat]||0) + Math.abs(t.amount); });
+
+  const addLimit = () => {
+    if (!limitForm.cat || !limitForm.limit) return;
+    const existing = budgets.find(b => b.cat === limitForm.cat);
+    if (existing) {
+      setBudgets(b => b.map(x => x.cat === limitForm.cat ? { ...x, limit: parseFloat(limitForm.limit) } : x));
+    } else {
+      setBudgets(b => [...b, { cat: limitForm.cat, limit: parseFloat(limitForm.limit), color: getCat(limitForm.cat).color }]);
+    }
+    setLimitForm({ cat: "bukmacher", limit: "" });
+    setLimitModal(false);
+  };
+  const deleteLimit = (cat) => setBudgets(b => b.filter(x => x.cat !== cat));
+
   return (
     <div style={{ padding: "0 16px 100px" }}>
-      <div style={{ paddingTop: 8, paddingBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div>
-          <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Cele oszczędnościowe</div>
-          <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 22, fontWeight: 500, marginTop: 3 }}>
-            <span style={{ color: "#10b981" }}>{fmt(totalSaved)}</span>
-            <span style={{ color: "#334155", fontSize: 14 }}> / {fmt(totalTarget)}</span>
-          </div>
-        </div>
-        <button onClick={() => setModal(true)} style={{ background: "#1e3a5f", border: "1px solid #2563eb44", color: "#60a5fa", borderRadius: 10, padding: "8px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600 }}>
-          <PlusCircle size={13}/> Cel
-        </button>
+      {/* Tab switcher */}
+      <div style={{ display: "flex", gap: 6, paddingTop: 8, paddingBottom: 14 }}>
+        {[["goals","🎯 Cele"],["limits","🚦 Limity"],["forecast","📈 Prognoza"],["vacation","🏖️ Wakacje"]].map(([t,l]) => (
+          <button key={t} onClick={() => setActiveTab(t)} style={{
+            flex: 1, padding: "9px 0", borderRadius: 12, cursor: "pointer", fontWeight: 700, fontSize: 12,
+            fontFamily: "'Space Grotesk', sans-serif",
+            background: activeTab === t ? "linear-gradient(135deg,#1e40af,#3b82f6)" : "#0f1825",
+            border: `1px solid ${activeTab === t ? "#2563eb" : "#1a2744"}`,
+            color: activeTab === t ? "white" : "#475569",
+          }}>{l}</button>
+        ))}
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {goals.map(goal => {
-          const pct = Math.min(100, goal.target > 0 ? (goal.saved / goal.target * 100) : 0);
-          const done = pct >= 100;
-          const acc = accounts.find(a => a.id === goal.accId);
-          return (
-            <Card key={goal.id} style={{ padding: "16px 18px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ fontSize: 28, lineHeight: 1 }}>{goal.emoji}</div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 14 }}>{goal.name}</div>
-                    {acc && <div style={{ fontSize: 11, color: acc.color, marginTop: 2 }}>{acc.name}</div>}
+      {/*    CELE    */}
+      {activeTab === "goals" && <>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Cele oszczędnościowe</div>
+            <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 20, fontWeight: 500, marginTop: 3 }}>
+              <span style={{ color: "#10b981" }}>{fmt(totalSaved)}</span>
+              <span style={{ color: "#334155", fontSize: 13 }}> / {fmt(totalTarget)}</span>
+            </div>
+          </div>
+          <button onClick={openAdd} style={{ background: "#1e3a5f", border: "1px solid #2563eb44", color: "#60a5fa", borderRadius: 10, padding: "8px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600 }}>
+            <PlusCircle size={13}/> Cel
+          </button>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {goals.map(goal => {
+            const pct  = Math.min(100, goal.target > 0 ? (goal.saved / goal.target * 100) : 0);
+            const done = pct >= 100;
+            const acc  = accounts.find(a => a.id === goal.accId);
+            return (
+              <Card key={goal.id} style={{ padding: "16px 18px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ fontSize: 28, lineHeight: 1 }}>{goal.emoji}</div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14 }}>{goal.name}</div>
+                      {acc && <div style={{ fontSize: 11, color: acc.color, marginTop: 2 }}>{acc.name}</div>}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 15, fontWeight: 600, color: done ? "#10b981" : goal.color }}>{pct.toFixed(0)}%</div>
+                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", marginTop: 4 }}>
+                      <button onClick={() => openEdit(goal)} style={{ background: "#0d1628", border: "1px solid #1a2744", borderRadius: 6, padding: "2px 8px", cursor: "pointer", color: "#60a5fa", fontSize: 10 }}>Edytuj</button>
+                      <button onClick={() => deleteGoal(goal.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#334155" }}><Trash2 size={11}/></button>
+                    </div>
                   </div>
                 </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 15, fontWeight: 600, color: done ? "#10b981" : goal.color }}>{pct.toFixed(0)}%</div>
-                  <button onClick={() => deleteGoal(goal.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#334155", marginTop: 2 }}><Trash2 size={11}/></button>
+                <div style={{ background: "#060b14", borderRadius: 8, height: 8, overflow: "hidden", marginBottom: 10 }}>
+                  <div style={{ width: `${pct}%`, height: "100%", background: done ? "linear-gradient(90deg,#059669,#10b981)" : `linear-gradient(90deg,${goal.color}99,${goal.color})`, borderRadius: 8, transition: "width 0.8s ease" }}/>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: "#64748b" }}>
+                    {fmt(goal.saved)} <span style={{ color: "#334155" }}>/ {fmt(goal.target)}</span>
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    {[100, 500, 1000].map(amt => (
+                      <button key={amt} onClick={() => updateSaved(goal.id, amt)} style={{ background: "#0a1e12", border: "1px solid #14532d55", borderRadius: 7, padding: "4px 10px", cursor: "pointer", color: "#10b981", fontSize: 11, fontWeight: 700 }}>+{amt}</button>
+                    ))}
+                    <button onClick={() => updateSaved(goal.id, -100)} style={{ background: "#1a0808", border: "1px solid #7f1d1d44", borderRadius: 7, padding: "4px 8px", cursor: "pointer", color: "#f87171", fontSize: 11 }}>−</button>
+                  </div>
+                </div>
+                {done
+                  ? <div style={{ marginTop: 10, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#10b981" }}>🎉 Cel osiągnięty!</div>
+                  : <div style={{ marginTop: 8, fontSize: 11, color: "#334155", textAlign: "right" }}>brakuje {fmt(goal.target - goal.saved)}</div>
+                }
+              </Card>
+            );
+          })}
+        </div>
+      </>}
+
+      {/*    LIMITY    */}
+      {activeTab === "limits" && <>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+          <div>
+            <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Limity miesięczne · {MONTH_NAMES[month]}</div>
+            <div style={{ fontSize: 12, color: "#334155", marginTop: 3 }}>Ustaw max kwotę na kategorię</div>
+          </div>
+          <button onClick={() => setLimitModal(true)} style={{ background: "#1e3a5f", border: "1px solid #2563eb44", color: "#60a5fa", borderRadius: 10, padding: "8px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5, fontSize: 13, fontWeight: 600 }}>
+            <PlusCircle size={13}/> Limit
+          </button>
+        </div>
+
+        {budgets.length === 0 && (
+          <div style={{ background: "#0f1825", border: "1px solid #1a2744", borderRadius: 14, padding: "24px 16px", textAlign: "center" }}>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🚦</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: "#475569" }}>Brak limitów</div>
+            <div style={{ fontSize: 12, color: "#334155", marginTop: 4 }}>Kliknij + Limit aby dodać pierwszy</div>
+          </div>
+        )}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {budgets.map(b => {
+            const spent  = spentBycat[b.cat] || 0;
+            const pct    = b.limit > 0 ? Math.min(100, spent / b.limit * 100) : 0;
+            const over   = spent > b.limit;
+            const warn   = !over && pct >= 80;
+            const cat    = getCat(b.cat);
+            const Icon   = cat.icon;
+            const remain = b.limit - spent;
+
+            return (
+              <div key={b.cat} style={{
+                background: over ? "linear-gradient(135deg,#1a0808,#200e0e)" : "#0f1825",
+                border: `1px solid ${over ? "#7f1d1d" : warn ? "#78350f" : "#1a2744"}`,
+                borderRadius: 14, padding: "14px 16px",
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ background: cat.color+"22", borderRadius: 10, padding: 8 }}>
+                      <Icon size={14} color={cat.color}/>
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 13 }}>{cat.label}</div>
+                      <div style={{ fontSize: 11, marginTop: 2, color: over ? "#ef4444" : warn ? "#f59e0b" : "#475569" }}>
+                        {over ? "! Przekroczono o " + fmt(spent - b.limit) : warn ? `🔶 Zostało tylko ${fmt(remain)}` : `Zostało ${fmt(remain)}`}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 14, fontWeight: 700, color: over ? "#ef4444" : warn ? "#f59e0b" : "#e2e8f0" }}>
+                      {fmt(spent)}
+                    </div>
+                    <div style={{ fontSize: 11, color: "#475569" }}>/ {fmt(b.limit)}</div>
+                    <button onClick={() => deleteLimit(b.cat)} style={{ background: "none", border: "none", cursor: "pointer", color: "#334155", marginTop: 2 }}><Trash2 size={11}/></button>
+                  </div>
+                </div>
+
+                {/* Progress bar */}
+                <div style={{ background: "#060b14", borderRadius: 6, height: 6, overflow: "hidden" }}>
+                  <div style={{
+                    width: `${pct}%`, height: "100%", borderRadius: 6,
+                    background: over ? "#ef4444" : warn ? "#f59e0b" : `linear-gradient(90deg,${cat.color}88,${cat.color})`,
+                    transition: "width 0.6s ease",
+                  }}/>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 5, fontSize: 10, fontFamily: "'DM Mono', monospace", color: "#334155" }}>
+                  <span>0</span>
+                  <span style={{ color: over ? "#ef4444" : "#475569", fontWeight: over ? 700 : 400 }}>{pct.toFixed(0)}%</span>
+                  <span>{fmt(b.limit)}</span>
                 </div>
               </div>
+            );
+          })}
+        </div>
+      </>}
 
-              <div style={{ background: "#060b14", borderRadius: 8, height: 8, overflow: "hidden", marginBottom: 10 }}>
-                <div style={{ width: `${pct}%`, height: "100%", background: done ? "linear-gradient(90deg,#059669,#10b981)" : `linear-gradient(90deg,${goal.color}99,${goal.color})`, borderRadius: 8, transition: "width 0.8s ease" }}/>
+      {/*    PROGNOZA    */}
+      {activeTab === "forecast" && <ForecastTab/>}
+
+      {/*    WAKACJE    */}
+      {activeTab === "vacation" && (() => {
+        // Spending: in-range by category + manually pinned
+        const from    = vacation.dateFrom || "0000";
+        const to      = vacation.dateTo   || "9999";
+        const pinned  = vacation.pinnedTxIds || [];
+        const vacTx   = transactions.filter(t =>
+          t.amount < 0 && (
+            (t.date >= from && t.date <= to && vacation.categories.includes(t.cat)) ||
+            pinned.includes(t.id)
+          )
+        );
+        // Separate: in-range vs pre-trip pinned
+        const inRange  = vacTx.filter(t => t.date >= from && t.date <= to && vacation.categories.includes(t.cat));
+        const preTrip  = vacTx.filter(t => pinned.includes(t.id) && !(t.date >= from && t.date <= to && vacation.categories.includes(t.cat)));
+        const spent    = vacTx.reduce((s,t) => s + Math.abs(t.amount), 0);
+        const preTripTotal = preTrip.reduce((s,t) => s + Math.abs(t.amount), 0);
+
+        const togglePin = (txId) => {
+          const curr = vacation.pinnedTxIds || [];
+          saveVacation({...vacation,
+            pinnedTxIds: curr.includes(txId) ? curr.filter(x => x !== txId) : [...curr, txId]
+          });
+        };
+
+        // Candidates for pinning   filtered by date range set at component level
+        const candidates = transactions
+          .filter(t =>
+            t.amount < 0 &&
+            t.date >= candidateFrom &&
+            t.date <= candidateTo &&
+            !(t.date >= from && t.date <= to && vacation.categories.includes(t.cat))
+          )
+          .sort((a,b) => b.date.localeCompare(a.date));
+        const budget = parseFloat(vacation.budget) || 0;
+        const remaining = budget - spent;
+        const pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : 0;
+
+        // Days calculation
+        const today = new Date();
+        const dFrom = vacation.dateFrom ? new Date(vacation.dateFrom) : null;
+        const dTo   = vacation.dateTo   ? new Date(vacation.dateTo)   : null;
+        const totalDays   = dFrom && dTo ? Math.max(1, Math.ceil((dTo - dFrom) / 86400000)) : 0;
+        const daysPassed  = dFrom ? Math.max(0, Math.ceil((today - dFrom) / 86400000)) : 0;
+        const daysLeft    = dTo   ? Math.max(0, Math.ceil((dTo - today)   / 86400000)) : 0;
+        const dailyBudget = budget > 0 && totalDays > 0 ? budget / totalDays : 0;
+        const dailyLeft   = remaining > 0 && daysLeft > 0 ? remaining / daysLeft : 0;
+        const isActive    = dFrom && dTo && today >= dFrom && today <= dTo;
+
+        const ALL_CATS = [...CATEGORIES];
+        const vacCats  = ALL_CATS.filter(c => !["przychód","sprzedaż","kiga","bukmacherka","inne","rząd","inwestycje","rachunki"].includes(c.id));
+
+        return (
+          <div>
+            {/* Setup card */}
+            <Card style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700,
+                textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>🏖️ Moje wakacje</div>
+              <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 5 }}>Nazwa</div>
+                  <input value={vacation.name}
+                    onChange={e => saveVacation({...vacation, name: e.target.value})}
+                    placeholder="np. Grecja 2026"
+                    style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+                      borderRadius: 8, padding: "9px 12px", color: "#e2e8f0", fontSize: 15,
+                      fontFamily: "'Space Grotesk', sans-serif", outline: "none" }}/>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 5 }}>Destynacja</div>
+                  <input value={vacation.dest}
+                    onChange={e => saveVacation({...vacation, dest: e.target.value})}
+                    placeholder="np. Ateny 🇬🇷"
+                    style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+                      borderRadius: 8, padding: "9px 12px", color: "#e2e8f0", fontSize: 15,
+                      fontFamily: "'Space Grotesk', sans-serif", outline: "none" }}/>
+                </div>
               </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, color: "#64748b" }}>
-                  {fmt(goal.saved)} <span style={{ color: "#334155" }}>/ {fmt(goal.target)}</span>
+              <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 5 }}>Data od</div>
+                  <input type="date" value={vacation.dateFrom}
+                    onChange={e => saveVacation({...vacation, dateFrom: e.target.value})}
+                    style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+                      borderRadius: 8, padding: "9px 12px", color: "#e2e8f0", fontSize: 15,
+                      fontFamily: "'Space Grotesk', sans-serif", outline: "none" }}/>
                 </div>
-                <div style={{ display: "flex", gap: 6 }}>
-                  {[100, 500, 1000].map(amt => (
-                    <button key={amt} onClick={() => updateSaved(goal.id, amt)} style={{ background: "#0a1e12", border: "1px solid #14532d55", borderRadius: 7, padding: "4px 10px", cursor: "pointer", color: "#10b981", fontSize: 11, fontWeight: 700 }}>+{amt}</button>
-                  ))}
-                  <button onClick={() => updateSaved(goal.id, -100)} style={{ background: "#1a0808", border: "1px solid #7f1d1d44", borderRadius: 7, padding: "4px 8px", cursor: "pointer", color: "#f87171", fontSize: 11 }}>−</button>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 5 }}>Data do</div>
+                  <input type="date" value={vacation.dateTo}
+                    onChange={e => saveVacation({...vacation, dateTo: e.target.value})}
+                    style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+                      borderRadius: 8, padding: "9px 12px", color: "#e2e8f0", fontSize: 15,
+                      fontFamily: "'Space Grotesk', sans-serif", outline: "none" }}/>
                 </div>
               </div>
-
-              {done && (
-                <div style={{ marginTop: 10, textAlign: "center", fontSize: 13, fontWeight: 700, color: "#10b981" }}>🎉 Cel osiągnięty!</div>
-              )}
-              {!done && (
-                <div style={{ marginTop: 8, fontSize: 11, color: "#334155", textAlign: "right" }}>
-                  brakuje {fmt(goal.target - goal.saved)}
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 11, color: "#64748b", marginBottom: 5 }}>Budżet (zł)</div>
+                <input type="number" value={vacation.budget}
+                  onChange={e => saveVacation({...vacation, budget: e.target.value})}
+                  placeholder="np. 5000"
+                  style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+                    borderRadius: 8, padding: "9px 12px", color: "#e2e8f0", fontSize: 16,
+                    fontFamily: "'DM Mono', monospace", outline: "none" }}/>
+              </div>
+              {/* Category selector */}
+              <div>
+                <div style={{ fontSize: 11, color: "#64748b", marginBottom: 8 }}>Śledzone kategorie</div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {vacCats.map(c => {
+                    const on = vacation.categories.includes(c.id);
+                    return (
+                      <button key={c.id} onClick={() => saveVacation({...vacation,
+                        categories: on
+                          ? vacation.categories.filter(x => x !== c.id)
+                          : [...vacation.categories, c.id]
+                      })} style={{
+                        background: on ? c.color+"22" : "#060b14",
+                        border: `1px solid ${on ? c.color+"66" : "#1a2744"}`,
+                        borderRadius: 8, padding: "5px 10px", cursor: "pointer",
+                        color: on ? c.color : "#334155", fontSize: 11, fontWeight: 600,
+                      }}>{c.label}</button>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
             </Card>
-          );
-        })}
-      </div>
 
-      <Modal open={modal} onClose={() => setModal(false)} title="Nowy cel">
+            {/* Stats   only if budget set */}
+            {budget > 0 && (
+              <Card style={{ marginBottom: 14, background: isActive ? "linear-gradient(135deg,#0a1e12,#061610)" : undefined }}>
+                {isActive && (
+                  <div style={{ fontSize: 11, color: "#10b981", fontWeight: 700,
+                    textTransform: "uppercase", marginBottom: 10 }}>✈️ Trwa teraz!</div>
+                )}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
+                  {[
+                    { label: "Wydano",     val: spent,     color: pct > 80 ? "#ef4444" : "#e2e8f0" },
+                    { label: "Zostało",    val: remaining, color: remaining < 0 ? "#ef4444" : "#10b981" },
+                    { label: "Dziennie",   val: dailyBudget, color: "#60a5fa", suffix: "/dzień" },
+                    { label: "Dziś mogę",  val: dailyLeft,   color: dailyLeft < 0 ? "#ef4444" : "#f59e0b", suffix: "/dzień" },
+                  ].map(({ label, val, color, suffix }) => (
+                    <div key={label} style={{ background: "#060b14", borderRadius: 10, padding: "10px 12px" }}>
+                      <div style={{ fontSize: 10, color: "#475569", fontWeight: 700,
+                        textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
+                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 15,
+                        fontWeight: 700, color }}>{fmt(Math.abs(val))}{suffix && <span style={{fontSize:10,color:"#475569"}}> {suffix}</span>}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Progress */}
+                <div style={{ marginBottom: 8, display: "flex", justifyContent: "space-between", fontSize: 11 }}>
+                  <span style={{ color: "#475569" }}>Budżet: {fmt(budget)}</span>
+                  <span style={{ color: pct > 100 ? "#ef4444" : pct > 80 ? "#f59e0b" : "#10b981",
+                    fontWeight: 700 }}>{pct.toFixed(0)}%</span>
+                </div>
+                <div style={{ background: "#060b14", borderRadius: 6, height: 8, overflow: "hidden" }}>
+                  <div style={{ width: `${pct}%`, height: "100%", borderRadius: 6,
+                    background: pct > 100 ? "#ef4444" : pct > 80 ? "#f59e0b" : "#10b981",
+                    transition: "width 0.6s" }}/>
+                </div>
+                {totalDays > 0 && (
+                  <div style={{ marginTop: 8, fontSize: 11, color: "#334155", textAlign: "center" }}>
+                    {totalDays} dni · {daysPassed} minęło · {daysLeft} zostało
+                  </div>
+                )}
+              </Card>
+            )}
+
+            {/* Pre-trip pinned transactions */}
+            <Card style={{ marginBottom: 14 }}>
+              <div style={{ fontSize: 11, color: "#f59e0b", fontWeight: 700,
+                textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 4 }}>
+                ✈️ Przed wyjazdem {preTripTotal > 0 && `· ${fmt(preTripTotal)}`}
+              </div>
+              <div style={{ fontSize: 11, color: "#475569", marginBottom: 10 }}>
+                Zaznacz transakcje które należą do wyjazdu (loty, ubezpieczenie, hotel...)
+              </div>
+              {/* Date range filter */}
+              <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center" }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: "#334155", marginBottom: 4 }}>Od</div>
+                  <input type="date" value={candidateFrom}
+                    onChange={e => setCandidateFrom(e.target.value)}
+                    style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+                      borderRadius: 8, padding: "7px 10px", color: "#e2e8f0", fontSize: 14,
+                      fontFamily: "'Space Grotesk', sans-serif", outline: "none" }}/>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: "#334155", marginBottom: 4 }}>Do</div>
+                  <input type="date" value={candidateTo}
+                    onChange={e => setCandidateTo(e.target.value)}
+                    style={{ width: "100%", background: "#060b14", border: "1px solid #1a2744",
+                      borderRadius: 8, padding: "7px 10px", color: "#e2e8f0", fontSize: 14,
+                      fontFamily: "'Space Grotesk', sans-serif", outline: "none" }}/>
+                </div>
+                <div style={{ flexShrink: 0 }}>
+                  <div style={{ fontSize: 10, color: "#334155", marginBottom: 4 }}>Szybko</div>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {[[1,"1M"],[3,"3M"],[6,"6M"]].map(([m,l]) => {
+                      const d = new Date(candidateTo || new Date());
+                      d.setMonth(d.getMonth() - m);
+                      const df = d.toISOString().slice(0,10);
+                      return (
+                        <button key={l} onClick={() => setCandidateFrom(df)}
+                          style={{ background: candidateFrom === df ? "#1e3a5f" : "#060b14",
+                            border: `1px solid ${candidateFrom === df ? "#2563eb" : "#1a2744"}`,
+                            borderRadius: 6, padding: "5px 8px", cursor: "pointer",
+                            color: candidateFrom === df ? "#60a5fa" : "#475569",
+                            fontSize: 11, fontWeight: 700 }}>{l}</button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              {candidates.length === 0 && (
+                <div style={{ fontSize: 12, color: "#334155", textAlign: "center", padding: 8 }}>Brak transakcji do przypięcia</div>
+              )}
+              <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 280, overflowY: "auto" }}>
+                {candidates.slice(0,20).map(t => {
+                  const cat  = getCat(t.cat);
+                  const Icon = cat.icon;
+                  const on   = (vacation.pinnedTxIds||[]).includes(t.id);
+                  return (
+                    <div key={t.id} onClick={() => togglePin(t.id)} style={{
+                      display: "flex", alignItems: "center", gap: 10, padding: "9px 10px",
+                      borderRadius: 10, cursor: "pointer",
+                      background: on ? "#0a1e12" : "#060b14",
+                      border: `1px solid ${on ? "#16a34a44" : "#1a2744"}`,
+                    }}>
+                      <div style={{ width: 20, height: 20, borderRadius: 6, flexShrink: 0,
+                        background: on ? "#052e16" : "#0d1628",
+                        border: `2px solid ${on ? "#16a34a" : "#1e3a5f"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {on && <Check size={11} color="#10b981"/>}
+                      </div>
+                      <div style={{ background: cat.color+"22", borderRadius: 7, padding: 5, flexShrink: 0 }}>
+                        <Icon size={11} color={cat.color}/>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 12, fontWeight: 500, overflow: "hidden",
+                          textOverflow: "ellipsis", whiteSpace: "nowrap",
+                          color: on ? "#86efac" : "#e2e8f0" }}>{t.desc}</div>
+                        <div style={{ fontSize: 10, color: "#475569" }}>{t.date} · {cat.label}</div>
+                      </div>
+                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12,
+                        color: on ? "#10b981" : "#ef4444", flexShrink: 0 }}>
+                        {fmt(Math.abs(t.amount))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            {/* All vacation transactions */}
+            {vacTx.length > 0 && (
+              <Card>
+                <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700,
+                  textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
+                  Wszystkie ({vacTx.length}) · {fmt(spent)}
+                </div>
+                {vacTx.slice(0,10).map(t => {
+                  const cat  = getCat(t.cat);
+                  const Icon = cat.icon;
+                  const isPinned = pinned.includes(t.id);
+                  return (
+                    <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 10,
+                      padding: "8px 0", borderBottom: "1px solid #0f1a2e" }}>
+                      <div style={{ background: cat.color+"22", borderRadius: 8, padding: 6, flexShrink: 0 }}>
+                        <Icon size={12} color={cat.color}/>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: 13, overflow: "hidden", textOverflow: "ellipsis",
+                          whiteSpace: "nowrap" }}>{t.desc}</div>
+                        <div style={{ fontSize: 11, color: "#475569" }}>
+                          {t.date} {isPinned && <span style={{color:"#f59e0b"}}>· ✈️ przed</span>}
+                        </div>
+                      </div>
+                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 13,
+                        color: "#ef4444", flexShrink: 0 }}>−{fmt(Math.abs(t.amount))}</div>
+                    </div>
+                  );
+                })}
+              </Card>
+            )}
+
+            {budget === 0 && (
+              <div style={{ textAlign: "center", padding: "24px 0", color: "#334155", fontSize: 13 }}>
+                Wpisz budżet powyżej żeby zobaczyć statystyki
+              </div>
+            )}
+
+            {/* Archive actions */}
+            <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+              <button
+                onClick={() => {
+                  if (!vacation.name) { alert("Wpisz nazwę wyjazdu przed zapisem"); return; }
+                  const entry = {
+                    ...vacation,
+                    id: Date.now(),
+                    savedAt: new Date().toISOString().slice(0,10),
+                    spent,
+                    txCount: vacTx.length,
+                  };
+                  setVacationArchive(a => [entry, ...a]);
+                  alert(`Zapisano "${vacation.name}" do archiwum!`);
+                }}
+                style={{ flex: 1, background: "linear-gradient(135deg,#1e40af,#3b82f6)",
+                  border: "none", borderRadius: 12, padding: "12px 0",
+                  color: "white", fontWeight: 700, fontSize: 14, cursor: "pointer",
+                  fontFamily: "'Space Grotesk', sans-serif" }}>
+                💾 Zapisz do archiwum
+              </button>
+              <button
+                onClick={() => {
+                  if (!window.confirm("Wyczyścić obecny wyjazd i zacząć nowy?")) return;
+                  const empty = { name: "", dest: "", dateFrom: "", dateTo: "", budget: "",
+                    categories: ["zakupy","jedzenie","transport","rozrywka","zdrowie"],
+                    pinnedTxIds: [] };
+                  saveVacation(empty);
+                }}
+                style={{ background: "#0d1628", border: "1px solid #1a2744",
+                  borderRadius: 12, padding: "12px 14px",
+                  color: "#64748b", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>
+                ✕ Nowy
+              </button>
+            </div>
+
+            {/* Archive list */}
+            {vacationArchive.length > 0 && (
+              <div style={{ marginTop: 16 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: "#475569",
+                  textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                  📚 Archiwum wyjazdów
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {vacationArchive.map(v => {
+                    const bgt      = parseFloat(v.budget) || 0;
+                    const pct      = bgt > 0 ? Math.min(100, (v.spent / bgt) * 100) : 0;
+                    const isOpen   = expandedVacId === v.id;
+                    const saved    = bgt - v.spent;
+                    const totalDays = v.dateFrom && v.dateTo
+                      ? Math.max(1, Math.ceil((new Date(v.dateTo) - new Date(v.dateFrom)) / 86400000))
+                      : 0;
+
+                    // Transactions that belonged to this vacation
+                    const vFrom  = v.dateFrom || "0000";
+                    const vTo    = v.dateTo   || "9999";
+                    const vPins  = v.pinnedTxIds || [];
+                    const vCats  = v.categories || [];
+                    const vTxs   = transactions.filter(t =>
+                      t.amount < 0 && (
+                        (t.date >= vFrom && t.date <= vTo && vCats.includes(t.cat)) ||
+                        vPins.includes(t.id)
+                      )
+                    ).sort((a,b) => b.date.localeCompare(a.date));
+
+                    // Category breakdown
+                    const catBreakdown = {};
+                    vTxs.forEach(t => {
+                      catBreakdown[t.cat] = (catBreakdown[t.cat] || 0) + Math.abs(t.amount);
+                    });
+                    const catRows = Object.entries(catBreakdown).sort((a,b) => b[1]-a[1]);
+
+                    return (
+                      <div key={v.id} style={{ background: "#0f1825", border: `1px solid ${isOpen ? "#2563eb44" : "#1a2744"}`,
+                        borderRadius: 14, overflow: "hidden" }}>
+
+                        {/* Header   always visible, click to expand */}
+                        <div onClick={() => setExpandedVacId(isOpen ? null : v.id)}
+                          style={{ padding: "14px 16px", cursor: "pointer" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                            <div>
+                              <div style={{ fontWeight: 700, fontSize: 14, display: "flex", alignItems: "center", gap: 8 }}>
+                                {v.name}
+                                {v.dest && <span style={{fontSize:12,color:"#64748b"}}>· {v.dest}</span>}
+                                <span style={{ fontSize: 11, color: isOpen ? "#60a5fa" : "#334155" }}>{isOpen ? "▲" : "▼"}</span>
+                              </div>
+                              <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>
+                                {v.dateFrom && v.dateTo ? `${v.dateFrom} → ${v.dateTo}` : v.savedAt}
+                                {totalDays > 0 && ` · ${totalDays} dni`}
+                                {v.txCount > 0 && ` · ${v.txCount} transakcji`}
+                              </div>
+                            </div>
+                            <button onClick={e => { e.stopPropagation();
+                              if (window.confirm(`Usunąć "${v.name}" z archiwum?`))
+                                setVacationArchive(a => a.filter(x => x.id !== v.id));
+                            }} style={{ background: "none", border: "none", cursor: "pointer",
+                              color: "#334155", padding: 4 }}><Trash2 size={13}/></button>
+                          </div>
+                          <div style={{ display: "flex", justifyContent: "space-between",
+                            fontSize: 13, fontFamily: "'DM Mono', monospace", marginBottom: 8 }}>
+                            <span style={{ color: "#94a3b8" }}>Budżet: <strong style={{color:"#e2e8f0"}}>{fmt(bgt)}</strong></span>
+                            <span style={{ color: pct > 100 ? "#ef4444" : "#10b981" }}>
+                              Wydano: <strong>{fmt(v.spent)}</strong> ({pct.toFixed(0)}%)
+                            </span>
+                          </div>
+                          {bgt > 0 && (
+                            <div style={{ background: "#060b14", borderRadius: 4, height: 4, overflow: "hidden" }}>
+                              <div style={{ width: `${pct}%`, height: "100%",
+                                background: pct > 100 ? "#ef4444" : pct > 80 ? "#f59e0b" : "#10b981",
+                                borderRadius: 4 }}/>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Expanded details */}
+                        {isOpen && (
+                          <div style={{ borderTop: "1px solid #1a2744", padding: "14px 16px" }}>
+
+                            {/* Summary grid */}
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
+                              {[
+                                { label: "Budżet",    val: bgt,        color: "#e2e8f0" },
+                                { label: "Wydano",    val: v.spent,    color: pct > 100 ? "#ef4444" : "#f59e0b" },
+                                { label: saved >= 0 ? "Zaoszczędzono" : "Przekroczono",
+                                  val: Math.abs(saved), color: saved >= 0 ? "#10b981" : "#ef4444" },
+                              ].map(({ label, val, color }) => (
+                                <div key={label} style={{ background: "#060b14", borderRadius: 10, padding: "10px 8px", textAlign: "center" }}>
+                                  <div style={{ fontSize: 9, color: "#475569", fontWeight: 700,
+                                    textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
+                                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 13,
+                                    fontWeight: 700, color }}>{fmt(val)}</div>
+                                </div>
+                              ))}
+                            </div>
+
+                            {/* Category breakdown */}
+                            {catRows.length > 0 && (
+                              <div style={{ marginBottom: 14 }}>
+                                <div style={{ fontSize: 10, color: "#475569", fontWeight: 700,
+                                  textTransform: "uppercase", marginBottom: 8 }}>Wydatki wg kategorii</div>
+                                {catRows.map(([cat, val]) => {
+                                  const c = getCat(cat);
+                                  const Icon = c.icon;
+                                  const p = v.spent > 0 ? (val / v.spent * 100) : 0;
+                                  return (
+                                    <div key={cat} style={{ marginBottom: 8 }}>
+                                      <div style={{ display: "flex", justifyContent: "space-between",
+                                        alignItems: "center", marginBottom: 4 }}>
+                                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                          <div style={{ background: c.color+"22", borderRadius: 6, padding: 4 }}>
+                                            <Icon size={11} color={c.color}/>
+                                          </div>
+                                          <span style={{ fontSize: 12 }}>{c.label}</span>
+                                        </div>
+                                        <span style={{ fontFamily: "'DM Mono', monospace",
+                                          fontSize: 12, color: c.color }}>{fmt(val)}</span>
+                                      </div>
+                                      <div style={{ background: "#060b14", borderRadius: 3, height: 3 }}>
+                                        <div style={{ width: `${p}%`, height: "100%",
+                                          background: c.color, borderRadius: 3, opacity: 0.7 }}/>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+
+                            {/* Transaction list */}
+                            {vTxs.length > 0 && (
+                              <div>
+                                <div style={{ fontSize: 10, color: "#475569", fontWeight: 700,
+                                  textTransform: "uppercase", marginBottom: 8 }}>
+                                  Transakcje ({vTxs.length})
+                                </div>
+                                {vTxs.slice(0,12).map(t => {
+                                  const cat = getCat(t.cat);
+                                  const Icon = cat.icon;
+                                  return (
+                                    <div key={t.id} style={{ display: "flex", alignItems: "center",
+                                      gap: 10, padding: "7px 0", borderBottom: "1px solid #0f1a2e" }}>
+                                      <div style={{ background: cat.color+"22", borderRadius: 7, padding: 5, flexShrink: 0 }}>
+                                        <Icon size={11} color={cat.color}/>
+                                      </div>
+                                      <div style={{ flex: 1, minWidth: 0 }}>
+                                        <div style={{ fontSize: 12, overflow: "hidden",
+                                          textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t.desc}</div>
+                                        <div style={{ fontSize: 10, color: "#475569" }}>{t.date}</div>
+                                      </div>
+                                      <div style={{ fontFamily: "'DM Mono', monospace",
+                                        fontSize: 12, color: "#ef4444", flexShrink: 0 }}>
+                                        −{fmt(Math.abs(t.amount))}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                                {vTxs.length > 12 && (
+                                  <div style={{ fontSize: 11, color: "#334155", textAlign: "center", padding: "8px 0" }}>
+                                    +{vTxs.length - 12} więcej
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* Modal   nowy cel */}
+      <Modal open={modal} onClose={() => { setModal(false); setEditGoal(null); }} title={editGoal ? "Edytuj cel" : "Nowy cel"}>
         <div style={{ marginBottom: 14 }}>
           <div style={{ fontSize: 11, fontWeight: 600, color: "#64748b", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em" }}>Emoji</div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
@@ -1929,32 +3089,62 @@ const GoalsView = ({ goals, setGoals, accounts }) => {
             ))}
           </div>
         </div>
-        <button onClick={addGoal} style={{ width: "100%", background: "linear-gradient(135deg,#1e40af,#3b82f6)", border: "none", borderRadius: 12, padding: 14, color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif" }}>
-          Dodaj cel
+        <button onClick={saveGoal} style={{ width: "100%", background: "linear-gradient(135deg,#1e40af,#3b82f6)", border: "none", borderRadius: 12, padding: 14, color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif" }}>
+          {editGoal ? "Zapisz zmiany" : "Dodaj cel"}
+        </button>
+      </Modal>
+
+      {/* Modal   nowy limit */}
+      <Modal open={limitModal} onClose={() => setLimitModal(false)} title="Nowy limit miesięczny">
+        <Select label="Kategoria" value={limitForm.cat} onChange={e => setLimitForm(f => ({...f, cat: e.target.value}))}>
+          {CATEGORIES.filter(c => !["przychód","inne","sprzedaż","kiga","bukmacherka"].includes(c.id)).map(c =>
+            <option key={c.id} value={c.id}>{c.label}</option>
+          )}
+        </Select>
+        <Input label="Limit miesięczny (zł)" type="number" value={limitForm.limit}
+          onChange={e => setLimitForm(f => ({...f, limit: e.target.value}))} placeholder="np. 200"/>
+        <div style={{ marginBottom: 16, background: "#060b14", border: "1px solid #1a2744", borderRadius: 10, padding: "12px 14px" }}>
+          <div style={{ fontSize: 12, color: "#64748b" }}>
+            Wydano w tym miesiącu: <span style={{ color: "#e2e8f0", fontFamily: "'DM Mono', monospace", fontWeight: 700 }}>
+              {fmt(spentBycat[limitForm.cat] || 0)}
+            </span>
+          </div>
+        </div>
+        <button onClick={addLimit} style={{ width: "100%", background: "linear-gradient(135deg,#1e40af,#3b82f6)", border: "none", borderRadius: 12, padding: 14, color: "white", fontWeight: 700, fontSize: 15, cursor: "pointer", fontFamily: "'Space Grotesk', sans-serif" }}>
+          Zapisz limit
         </button>
       </Modal>
     </div>
   );
 };
 
-// ── PAYMENTS VIEW ────────────────────────────────────────────────────────────
-const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setTransactions, accounts, month }) => {
-  const TODAY_DAY = 23;
-  const monthKey  = `2026-${String(month + 1).padStart(2, "0")}`;
+//    PAYMENTS VIEW                                                             
+const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setTransactions, accounts, month: globalMonth }) => {
+  const TODAY_DAY  = new Date().getDate();
+  // When cycle doesn't start on 1st, only show overdue if we're past dueDay IN current month
+  // AND the current calendar date is within the billing cycle
+  const inCurrentCycle = isCurrentMonth; // simplified: only show overdue in current month
+  // own month selector   starts at current month, can navigate independently
+  const [localMonth, setLocalMonth] = useState(globalMonth);
+  const month    = localMonth;
+  const monthKey = `2026-${String(month + 1).padStart(2, "0")}`;
+  const isCurrentMonth = month === globalMonth;
   const DAYS_PL   = ["Pn","Wt","Śr","Cz","Pt","So","Nd"];
 
   const [modal,    setModal]    = useState(false);
   const [editItem, setEditItem] = useState(null);
+  const [showAll,  setShowAll]  = useState(false);
   const [section,  setSection]  = useState("credit"); // active add section
   const EMPTY = { name:"", amount:"", cat:"rachunki", acc:1, color:"#3b82f6",
-                  type:"credit", freq:"monthly", dueDay:1, dayOfWeek:1, trackPaid:true };
+                  type:"credit", freq:"monthly", dueDay:1, dayOfWeek:1, trackPaid:true, shared:false };
   const [form, setForm] = useState(EMPTY);
 
   const openAdd = (type) => {
     const defaults = {
-      credit: { ...EMPTY, type:"credit", color:"#3b82f6", cat:"rachunki" },
-      bill:   { ...EMPTY, type:"bill",   color:"#f59e0b", cat:"rachunki" },
-      sub:    { ...EMPTY, type:"sub",    color:"#8b5cf6", cat:"rozrywka", freq:"monthly" },
+      credit:  { ...EMPTY, type:"credit",  color:"#3b82f6", cat:"rachunki"   },
+      bill:    { ...EMPTY, type:"bill",    color:"#f59e0b", cat:"rachunki"   },
+      sub:     { ...EMPTY, type:"sub",     color:"#8b5cf6", cat:"rozrywka"   },
+      savings: { ...EMPTY, type:"savings", color:"#10b981", cat:"inwestycje" },
     };
     setEditItem(null);
     setForm(defaults[type] || EMPTY);
@@ -1972,6 +3162,7 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
       dueDay: item.dueDay || 1,
       dayOfWeek: item.dayOfWeek || 1,
       trackPaid: item.trackPaid !== false,
+      shared: item.shared || false,
     });
     setModal(true);
   };
@@ -1979,17 +3170,19 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
   const save = () => {
     if (!form.name || !form.amount) return;
     const item = {
-      id:       editItem ? editItem.id : Date.now(),
-      name:     form.name,
-      amount:   -Math.abs(parseFloat(form.amount)),
-      cat:      form.cat,
-      acc:      parseInt(form.acc),
-      color:    form.color,
-      type:     form.type,
-      freq:     form.freq,
-      dueDay:   parseInt(form.dueDay) || 1,
-      dayOfWeek:parseInt(form.dayOfWeek) || 1,
-      trackPaid:form.trackPaid,
+      id:         editItem ? editItem.id : Date.now(),
+      name:       form.name,
+      amount:     -Math.abs(parseFloat(form.amount)),
+      cat:        form.cat,
+      acc:        parseInt(form.acc),
+      color:      form.color,
+      type:       form.type,
+      freq:       form.freq,
+      dueDay:     parseInt(form.dueDay) || 1,
+      dayOfWeek:  parseInt(form.dayOfWeek) || 1,
+      trackPaid:  form.trackPaid,
+      shared:     form.shared || false,
+      startMonth: form.freq === "bimonthly" ? (form.startMonth !== undefined ? form.startMonth : new Date().getMonth()) : 0,
     };
     if (editItem) setPayments(p => p.map(x => x.id === editItem.id ? item : x));
     else          setPayments(p => [...p, item]);
@@ -1998,6 +3191,13 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
 
   const del = (id) => setPayments(p => p.filter(x => x.id !== id));
 
+  // Check if a bimonthly item is due this month
+  const isDueThisMonth = (item) => {
+    if (item.freq !== "bimonthly") return true;
+    const startM = item.startMonth || new Date().getMonth();
+    return Math.abs(month - startM) % 2 === 0;
+  };
+
   const isPaid = (item) => !!paid[`${item.id}_${monthKey}`];
 
   const togglePaid = (item) => {
@@ -2005,8 +3205,8 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
     const nowPaid = !paid[key];
     setPaid(p => ({ ...p, [key]: nowPaid }));
     if (nowPaid) {
-      const day  = String(item.dueDay || 1).padStart(2, "0");
-      const date = `2026-${String(month+1).padStart(2,"0")}-${day}`;
+      // Use today's real date, not dueDay   user paid today
+      const date = new Date().toISOString().split("T")[0];
       setTransactions(tx => [{ id: Date.now(), date, desc: item.name, amount: item.amount, cat: item.cat, acc: item.acc }, ...tx]);
     } else {
       setTransactions(tx => {
@@ -2019,14 +3219,23 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
   const freqLabel = (item) => {
     if (item.freq === "daily")   return "Codziennie";
     if (item.freq === "weekly")  return `Co tydzień · ${DAYS_PL[(item.dayOfWeek-1)%7]}`;
-    if (item.freq === "bimonthly") return "Co 2 miesiące";
+    if (item.freq === "bimonthly") {
+      const startM = item.startMonth || 0;
+      let next = -1;
+      for (let i = 1; i <= 12; i++) {
+        const m = (month + i) % 12;
+        if (Math.abs(m - startM) % 2 === 0) { next = m; break; }
+      }
+      return `Co 2 mies.${next >= 0 ? " · nast: " + MONTHS[next] : ""}`;
+    }
     return `${item.dueDay}. każdego`;
   };
 
   const ItemCard = ({ item }) => {
     const p = isPaid(item);
-    const overdue = !p && item.freq === "monthly" && item.dueDay < TODAY_DAY;
-    const soon    = !p && !overdue && item.freq === "monthly" && (item.dueDay - TODAY_DAY) <= 3;
+    const isMonthly = item.freq === "monthly" || item.freq === "bimonthly";
+    const overdue = !p && isMonthly && isCurrentMonth && (item.dueDay||1) < TODAY_DAY;
+    const soon    = !p && !overdue && isMonthly && isCurrentMonth && ((item.dueDay||1) - TODAY_DAY) <= 3 && (item.dueDay||1) >= TODAY_DAY;
     return (
       <div style={{
         background: p ? "#0a1410" : overdue ? "linear-gradient(135deg,#1a0808,#200e0e)" : "#0f1825",
@@ -2045,14 +3254,28 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
         </button>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontWeight: 600, fontSize: 13, color: p ? "#64748b" : "#e2e8f0",
-            textDecoration: p ? "line-through" : "none",
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+            <div style={{ fontWeight: 600, fontSize: 13, color: p ? "#64748b" : "#e2e8f0",
+              textDecoration: p ? "line-through" : "none",
+              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>{item.name}</div>
+            {item.shared && (
+              <span style={{ fontSize: 9, fontWeight: 700, background: "#0a1e12",
+                border: "1px solid #16a34a44", borderRadius: 5, padding: "1px 5px",
+                color: "#10b981", flexShrink: 0 }}>👫 wspólne</span>
+            )}
+          </div>
           <div style={{ fontSize: 11, marginTop: 2, color:
-            overdue ? "#ef4444" : soon ? "#f59e0b" : "#475569" }}>
-            {overdue ? `⚠ Termin minął (${item.dueDay}.)` :
+            overdue ? "#ef4444" : soon ? "#f59e0b" : "#475569",
+            display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap" }}>
+            <span>{overdue ? "! Termin minal (" + item.dueDay + ".)" :
              soon    ? `🕐 Za ${item.dueDay - TODAY_DAY} dni` :
-             freqLabel(item)}
+             freqLabel(item)}</span>
+            {item.freq === "bimonthly" && (
+              <span style={{ background: "#1e2d45", borderRadius: 5, padding: "1px 6px",
+                fontSize: 10, color: "#60a5fa", fontWeight: 700 }}>
+                co 2 mies. · start: {MONTHS[item.startMonth || 0]}
+              </span>
+            )}
           </div>
         </div>
 
@@ -2075,8 +3298,9 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
   };
 
   const Section = ({ type, label, emoji, color, items }) => {
-    const total = items.reduce((s, x) => s + Math.abs(x.amount), 0);
-    const paidAmt = items.filter(isPaid).reduce((s, x) => s + Math.abs(x.amount), 0);
+    const dueItems = items.filter(isDueThisMonth);
+    const total = dueItems.reduce((s, x) => s + Math.abs(x.amount), 0);
+    const paidAmt = dueItems.filter(isPaid).reduce((s, x) => s + Math.abs(x.amount), 0);
     const pct = total > 0 ? (paidAmt / total * 100) : 0;
     return (
       <div style={{ marginBottom: 22 }}>
@@ -2092,15 +3316,20 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
               padding: "3px 8px", cursor: "pointer", color, fontSize: 11, fontWeight: 700 }}>+ Dodaj</button>
           </div>
         </div>
-        {items.length === 0 ? (
+        {dueItems.length === 0 && items.length === 0 ? (
           <div style={{ background: "#060b14", borderRadius: 12, padding: "12px 16px",
             fontSize: 12, color: "#334155", textAlign: "center" }}>
             Brak — kliknij + Dodaj
           </div>
+        ) : dueItems.length === 0 ? (
+          <div style={{ background: "#060b14", borderRadius: 12, padding: "12px 16px",
+            fontSize: 12, color: "#334155", textAlign: "center" }}>
+            Brak płatności w tym miesiącu
+          </div>
         ) : (
           <>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {items.sort((a,b) => (a.dueDay||1)-(b.dueDay||1)).map(item => <ItemCard key={item.id} item={item}/>)}
+              {dueItems.sort((a,b) => (a.dueDay||1)-(b.dueDay||1)).map(item => <ItemCard key={item.id} item={item}/>)}
             </div>
             {items.length > 1 && (
               <div style={{ marginTop: 8, background: "#060b14", borderRadius: 8, height: 5, overflow: "hidden" }}>
@@ -2113,22 +3342,59 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
     );
   };
 
-  const credits = payments.filter(p => p.type === "credit");
-  const bills   = payments.filter(p => p.type === "bill");
-  const subs    = payments.filter(p => p.type === "sub" || (!p.type && p.freq !== "daily" && p.freq !== "weekly"));
+  // Only show bimonthly payments in their active months
+  const isActiveThisMonth = (p) => {
+    if (p.freq !== "bimonthly") return true;
+    // startMonth is always 0-based (0=Jan, 2=Mar etc)
+    const startM = p.startMonth || new Date().getMonth();
+    return Math.abs(month - startM) % 2 === 0;
+  };
 
-  const allMthTotal = [...credits, ...bills, ...subs].reduce((s, x) => s + Math.abs(x.amount), 0);
-  const allMthPaid  = [...credits, ...bills, ...subs].filter(isPaid).reduce((s, x) => s + Math.abs(x.amount), 0);
+  const activeFilter = (p) => showAll || isActiveThisMonth(p);
+  const credits  = payments.filter(p => p.type === "credit"  && activeFilter(p));
+  const bills    = payments.filter(p => p.type === "bill"     && activeFilter(p));
+  const subs     = payments.filter(p => p.type === "sub"      && activeFilter(p));
+  const savings  = payments.filter(p => p.type === "savings"  && activeFilter(p));
+
+  const allItems    = [...credits, ...bills, ...subs, ...savings];
+  const allMthTotal = allItems.reduce((s, x) => s + Math.abs(x.amount), 0);
+  const allMthPaid  = allItems.filter(isPaid).reduce((s, x) => s + Math.abs(x.amount), 0);
   const totalPct    = allMthTotal > 0 ? (allMthPaid / allMthTotal * 100) : 0;
 
   const FREQ_LABELS = { monthly: "Miesięcznie", bimonthly: "Co 2 miesiące", weekly: "Tygodniowo", daily: "Codziennie" };
 
   return (
     <div style={{ padding: "0 16px 100px" }}>
-      {/* Header summary */}
+      {/* Header summary + month nav */}
       <div style={{ paddingTop: 8, paddingBottom: 14 }}>
-        <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Płatności · {MONTH_NAMES[month]}</div>
-        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 20, fontWeight: 500, marginTop: 3 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+          <button onClick={() => setLocalMonth(m => Math.max(0, m-1))}
+            style={{ background: "#1a2744", border: "none", borderRadius: 8, padding: "6px 10px", cursor: "pointer", color: "#94a3b8" }}>
+            <ChevronLeft size={14}/>
+          </button>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em" }}>Płatności</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: isCurrentMonth ? "#e2e8f0" : "#60a5fa", marginTop: 2 }}>
+              {MONTH_NAMES[month]} 2026 {isCurrentMonth && <span style={{ fontSize: 10, color: "#10b981" }}>● teraz</span>}
+            </div>
+          </div>
+          <button onClick={() => setLocalMonth(m => Math.min(11, m+1))}
+            style={{ background: "#1a2744", border: "none", borderRadius: 8, padding: "6px 10px", cursor: "pointer", color: "#94a3b8" }}>
+            <ChevronRight size={14}/>
+          </button>
+        </div>
+        {/* Show all toggle */}
+        <button onClick={() => setShowAll(s => !s)} style={{
+          width: "100%", marginBottom: 6,
+          background: showAll ? "#1e3a5f" : "transparent",
+          border: `1px solid ${showAll ? "#2563eb" : "#1a2744"}`,
+          borderRadius: 8, padding: "7px 0", cursor: "pointer",
+          color: showAll ? "#60a5fa" : "#334155", fontSize: 12, fontWeight: 700,
+          fontFamily: "'Space Grotesk', sans-serif",
+        }}>
+          {showAll ? "👁 Wszystkie płatności (edycja/usuwanie)" : "Pokaż tylko aktywne w tym miesiącu"}
+        </button>
+        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 20, fontWeight: 500, textAlign: "center" }}>
           <span style={{ color: "#10b981" }}>{fmt(allMthPaid)}</span>
           <span style={{ color: "#334155", fontSize: 14 }}> / {fmt(allMthTotal)}</span>
         </div>
@@ -2139,9 +3405,51 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
         </div>
       </div>
 
-      <Section type="credit" label="Zobowiązania"  emoji="🏦" color="#3b82f6" items={credits}/>
-      <Section type="bill"   label="Rachunki"       emoji="📄" color="#f59e0b" items={bills}/>
-      <Section type="sub"    label="Subskrypcje"    emoji="🔄" color="#8b5cf6" items={subs}/>
+      <Section type="credit"  label="Zobowiązania"           emoji="🏦" color="#3b82f6" items={credits}/>
+      <Section type="bill"    label="Rachunki"                emoji="📄" color="#f59e0b" items={bills}/>
+      <Section type="sub"     label="Subskrypcje"             emoji="🔄" color="#8b5cf6" items={subs}/>
+      <Section type="savings" label="Cele oszczędnościowe"    emoji="💰" color="#10b981" items={savings}/>
+
+      {/* Nieaktywne w tym miesi cu   co 2 miesi ce */}
+      {(() => {
+        const inactive = payments.filter(p => p.freq === "bimonthly" && !isActiveThisMonth(p));
+        if (inactive.length === 0) return null;
+        return (
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#334155",
+              textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8,
+              display: "flex", alignItems: "center", gap: 6 }}>
+              📅 Co 2 miesiące (nie w tym miesiącu)
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {inactive.map(item => (
+                <div key={item.id} style={{ background: "#060b14", border: "1px solid #1a2744",
+                  borderRadius: 12, padding: "12px 14px", opacity: 0.5,
+                  display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>{item.name}</div>
+                    <div style={{ fontSize: 11, color: "#334155", marginTop: 2 }}>
+                      {freqLabel(item)}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, color: "#334155" }}>
+                      {fmt(Math.abs(item.amount))}
+                    </span>
+                    <button onClick={() => openEdit(item)} style={{
+                      background: "#0d1628", border: "1px solid #1a2744", borderRadius: 6,
+                      padding: "3px 8px", cursor: "pointer", color: "#60a5fa", fontSize: 10 }}>Edytuj</button>
+                    <button onClick={() => del(item.id)} style={{
+                      background: "none", border: "none", cursor: "pointer", color: "#334155" }}>
+                      <Trash2 size={11}/>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
 
       {totalPct >= 100 && payments.length > 0 && (
         <div style={{ textAlign: "center", padding: "16px 0" }}>
@@ -2150,14 +3458,15 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
         </div>
       )}
 
+
       {/* Modal */}
       <Modal open={modal} onClose={() => { setModal(false); setEditItem(null); }}
-             title={editItem ? "Edytuj" : form.type === "credit" ? "Nowe zobowiązanie" : form.type === "sub" ? "Nowa subskrypcja" : "Nowy rachunek"}>
+             title={editItem ? "Edytuj" : form.type === "credit" ? "Nowe zobowiązanie" : form.type === "sub" ? "Nowa subskrypcja" : form.type === "savings" ? "Nowy cel oszczędnościowy" : "Nowy rachunek"}>
 
         {/* Type tabs in modal */}
         {!editItem && (
           <div style={{ display: "flex", gap: 6, marginBottom: 16 }}>
-            {[["credit","🏦 Zobowiązanie"],["bill","📄 Rachunek"],["sub","🔄 Subskrypcja"]].map(([t,l]) => (
+            {[["credit","🏦 Zobowiązanie"],["bill","📄 Rachunek"],["sub","🔄 Subskrypcja"],["savings","💰 Oszczędności"]].map(([t,l]) => (
               <button key={t} onClick={() => setForm(f => ({...f, type: t}))}
                 style={{ flex: 1, background: form.type === t ? "#1e3a5f" : "#060b14",
                   border: `1px solid ${form.type === t ? "#2563eb" : "#1a2744"}`,
@@ -2200,9 +3509,17 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
           <Input label="Dzień miesiąca (termin)" type="number" min="1" max="31"
             value={form.dueDay} onChange={e => setForm(f => ({...f, dueDay: e.target.value}))}/>
         )}
+        {form.freq === "bimonthly" && (
+          <Select label="Pierwszy miesiąc płatności" value={form.startMonth || new Date().getMonth()}
+            onChange={e => setForm(f => ({...f, startMonth: parseInt(e.target.value)}))}>
+            {MONTH_NAMES.map((m, i) => (
+              <option key={i} value={i}>{m} 2026 (potem co 2 miesiące)</option>
+            ))}
+          </Select>
+        )}
 
         {/* Track paid toggle */}
-        <div style={{ marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between",
+        <div style={{ marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "space-between",
           background: "#060b14", border: "1px solid #1a2744", borderRadius: 10, padding: "12px 14px" }}>
           <div>
             <div style={{ fontSize: 13, fontWeight: 600 }}>Śledź opłacanie</div>
@@ -2214,6 +3531,24 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
           }}>
             <div style={{ width: 18, height: 18, borderRadius: 9, background: "white", position: "absolute",
               top: 3, left: form.trackPaid ? 23 : 3, transition: "left 0.2s" }}/>
+          </button>
+        </div>
+
+        {/* Shared with Kinga toggle */}
+        <div style={{ marginBottom: 14, display: "flex", alignItems: "center", justifyContent: "space-between",
+          background: form.shared ? "#0d1e12" : "#060b14",
+          border: `1px solid ${form.shared ? "#16a34a44" : "#1a2744"}`,
+          borderRadius: 10, padding: "12px 14px" }}>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 600 }}>👫 Wspólne z Kingą</div>
+            <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>Liczy się do rozliczenia wspólnego</div>
+          </div>
+          <button onClick={() => setForm(f => ({...f, shared: !f.shared}))} style={{
+            width: 44, height: 24, borderRadius: 12, border: "none", cursor: "pointer",
+            background: form.shared ? "#10b981" : "#1a2744", position: "relative", transition: "background 0.2s",
+          }}>
+            <div style={{ width: 18, height: 18, borderRadius: 9, background: "white", position: "absolute",
+              top: 3, left: form.shared ? 23 : 3, transition: "left 0.2s" }}/>
           </button>
         </div>
 
@@ -2239,11 +3574,167 @@ const PaymentsView = ({ payments, setPayments, paid, setPaid, transactions, setT
 };
 
 
-// ── ANALYTICS VIEW ─────────────────────────────────────────────────────────────
-const AnalyticsView = ({ transactions, month, cycleDay = 1 }) => {
-  const monthTx = transactions.filter(t => t.date.startsWith(`2026-${String(month+1).padStart(2,"0")}`));
+//    ANALYTICS VIEW                                                              
+//    MONTH COMPARISON COMPONENT                                                
+const MonthComparison = ({ transactions, month }) => {
+  const [cmpMonth, setCmpMonth] = useState(month > 0 ? month - 1 : 0);
+
+  const cmpKey = `2026-${String(cmpMonth+1).padStart(2,"0")}`;
+  const curKey = `2026-${String(month+1).padStart(2,"0")}`;
+
+  const cmpTx  = transactions.filter(t => t.date.startsWith(cmpKey) && t.cat !== "inne");
+  const curTx  = transactions.filter(t => t.date.startsWith(curKey) && t.cat !== "inne");
+
+  const cmpExp = cmpTx.filter(t => t.amount < 0).reduce((s,t) => s + Math.abs(t.amount), 0);
+  const curExp = curTx.filter(t => t.amount < 0).reduce((s,t) => s + Math.abs(t.amount), 0);
+  const cmpInc = cmpTx.filter(t => t.amount > 0).reduce((s,t) => s + t.amount, 0);
+  const curInc = curTx.filter(t => t.amount > 0).reduce((s,t) => s + t.amount, 0);
+
+  const catMap = {};
+  [...cmpTx, ...curTx].filter(t => t.amount < 0).forEach(t => {
+    if (!catMap[t.cat]) catMap[t.cat] = { cmp: 0, cur: 0 };
+    if (t.date.startsWith(cmpKey)) catMap[t.cat].cmp += Math.abs(t.amount);
+    else catMap[t.cat].cur += Math.abs(t.amount);
+  });
+  const catRows = Object.entries(catMap)
+    .map(([cat, d]) => ({ cat, ...d, diff: d.cur - d.cmp }))
+    .filter(r => r.cur > 0 || r.cmp > 0)
+    .sort((a,b) => Math.abs(b.diff) - Math.abs(a.diff));
+
+  return (
+    <Card style={{ marginBottom: 14 }}>
+      <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>
+        📊 Porównanie miesięcy
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+        <span style={{ fontSize: 12, color: "#475569", flexShrink: 0 }}>Porównaj z:</span>
+        <select value={cmpMonth} onChange={e => setCmpMonth(parseInt(e.target.value))}
+          style={{ flex: 1, background: "#060b14", border: "1px solid #1a2744", borderRadius: 8,
+            padding: "8px 12px", color: "#e2e8f0", fontSize: 14, outline: "none" }}>
+          {MONTH_NAMES.map((m, i) => i !== month && (
+            <option key={i} value={i}>{m} 2026</option>
+          ))}
+        </select>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 14 }}>
+        {[
+          { label: "Wydatki",   cur: curExp, cmp: cmpExp, isExp: true },
+          { label: "Przychody", cur: curInc, cmp: cmpInc, isExp: false },
+        ].map(({ label, cur, cmp, isExp }) => {
+          const diff = cur - cmp;
+          const good = isExp ? diff < 0 : diff > 0;
+          return (
+            <div key={label} style={{ background: "#060b14", borderRadius: 12, padding: "12px 14px" }}>
+              <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>{label}</div>
+              <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 15, fontWeight: 700, color: "#e2e8f0" }}>{fmt(cur)}</div>
+              <div style={{ fontSize: 11, color: "#475569", marginTop: 2 }}>{MONTHS[cmpMonth]}: {fmt(cmp)}</div>
+              {diff !== 0 && (
+                <div style={{ fontSize: 11, fontWeight: 700, marginTop: 4, color: good ? "#10b981" : "#ef4444" }}>
+                  {diff > 0 ? "▲" : "▼"} {fmt(Math.abs(diff))} {good ? "" : ""}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {catRows.length > 0 && (
+        <>
+          <div style={{ fontSize: 10, color: "#334155", fontWeight: 700, textTransform: "uppercase", marginBottom: 8 }}>Zmiany per kategoria</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {catRows.slice(0, 8).map(row => {
+              const cat  = getCat(row.cat);
+              const Icon = cat.icon;
+              return (
+                <div key={row.cat} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ background: cat.color+"22", borderRadius: 8, padding: 6, flexShrink: 0 }}>
+                    <Icon size={12} color={cat.color}/>
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12, fontWeight: 500 }}>{cat.label}</div>
+                    <div style={{ fontSize: 10, color: "#475569" }}>
+                      {MONTHS[cmpMonth]}: {fmt(row.cmp)} → {MONTHS[month]}: {fmt(row.cur)}
+                    </div>
+                  </div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 12, fontWeight: 700,
+                    color: row.diff > 0 ? "#ef4444" : "#10b981", flexShrink: 0 }}>
+                    {row.diff > 0 ? "+" : ""}{fmt(row.diff)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </Card>
+  );
+};
+
+const AnalyticsView = ({ transactions, payments, paid, month, cycleDay = 1 }) => {
+  const [activeView, setActiveView] = useState("month"); // "month" | "period"
+  const [period, setPeriod]         = useState("month"); // month|quarter|half|year
+  const [groupBy, setGroupBy]       = useState("cat");   // cat | place
+  const [sortBy, setSortBy]         = useState("total"); // total | count | avg
+
+  //    Period filter                                                          
+  const getPeriodTx = () => {
+    const now   = new Date();
+    const year  = now.getFullYear();
+    const mo    = now.getMonth(); // 0-based
+    let from, to;
+    if (period === "month") {
+      from = `${year}-${String(mo+1).padStart(2,"0")}-01`;
+      to   = `${year}-${String(mo+1).padStart(2,"0")}-31`;
+    } else if (period === "quarter") {
+      const q = Math.floor(mo / 3);
+      from = `${year}-${String(q*3+1).padStart(2,"0")}-01`;
+      to   = `${year}-${String(Math.min(q*3+3,12)).padStart(2,"0")}-31`;
+    } else if (period === "half") {
+      from = mo < 6 ? `${year}-01-01` : `${year}-07-01`;
+      to   = mo < 6 ? `${year}-06-30` : `${year}-12-31`;
+    } else {
+      from = `${year}-01-01`;
+      to   = `${year}-12-31`;
+    }
+    return transactions.filter(t => t.date >= from && t.date <= to && t.cat !== "inne");
+  };
+
+  const periodTx      = useMemo(getPeriodTx, [transactions, period]);
+  const periodExp     = periodTx.filter(t => t.amount < 0);
+  const periodInc     = periodTx.filter(t => t.amount > 0);
+  const periodTotal   = periodExp.reduce((s,t) => s + Math.abs(t.amount), 0);
+  const periodIncTotal= periodInc.reduce((s,t) => s + t.amount, 0);
+
+  // Group by category or place (desc)
+  const groupedData = useMemo(() => {
+    const map = {};
+    periodExp.forEach(t => {
+      const key = groupBy === "cat" ? t.cat : t.desc.trim();
+      if (!map[key]) map[key] = { total: 0, count: 0, cat: t.cat };
+      map[key].total += Math.abs(t.amount);
+      map[key].count += 1;
+    });
+    return Object.entries(map).map(([key, d]) => ({
+      key,
+      total: d.total,
+      count: d.count,
+      avg:   d.total / d.count,
+      cat:   d.cat,
+    })).sort((a,b) => {
+      if (sortBy === "count") return b.count - a.count;
+      if (sortBy === "avg")   return b.avg - a.avg;
+      return b.total - a.total;
+    });
+  }, [periodExp, groupBy, sortBy]);
+
+  const PERIOD_LABELS = { month: "Miesiąc", quarter: "Kwartał", half: "Półrocze", year: "Rok" };
+  const maxVal = (groupedData[0] ? groupedData[0].total : null) || 1;
+
+  const monthTx = cycleTxs(transactions, month, cycleDay);
   const expense = monthTx.filter(t => t.amount < 0 && t.cat !== "inne");
-  const income = monthTx.filter(t => t.amount > 0 && t.cat !== "inne");
+  const income  = monthTx.filter(t => t.amount > 0 && t.cat !== "inne");
 
   const catData = useMemo(() => {
     const map = {};
@@ -2266,6 +3757,150 @@ const AnalyticsView = ({ transactions, month, cycleDay = 1 }) => {
 
   return (
     <div style={{ padding: "0 16px 100px" }}>
+
+      {/* View switcher */}
+      <div style={{ display: "flex", gap: 8, paddingTop: 8, paddingBottom: 14 }}>
+        {[["month","Biezacy"],["period","Okresy"]].map(([v,l]) => (
+          <button key={v} onClick={() => setActiveView(v)} style={{
+            flex: 1, padding: "10px 0", borderRadius: 12, cursor: "pointer",
+            fontWeight: 700, fontSize: 13, fontFamily: "'Space Grotesk', sans-serif",
+            background: activeView === v ? "linear-gradient(135deg,#1e40af,#3b82f6)" : "#0f1825",
+            border: activeView === v ? "1px solid #2563eb" : "1px solid #1a2744",
+            color: activeView === v ? "white" : "#475569",
+          }}>{l}</button>
+        ))}
+      </div>
+
+      {/* Okresy view */}
+      {activeView === "period" && (
+        <div>
+          {/* Period selector */}
+          <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+            {[["month","Miesiac"],["quarter","Kwartal"],["half","Polrocze"],["year","Rok"]].map(([v,l]) => (
+              <button key={v} onClick={() => setPeriod(v)} style={{
+                flex: 1, padding: "8px 0", borderRadius: 10, cursor: "pointer",
+                fontWeight: 700, fontSize: 12, fontFamily: "'Space Grotesk', sans-serif",
+                background: period === v ? "#1e3a5f" : "#060b14",
+                border: period === v ? "1px solid #2563eb" : "1px solid #1a2744",
+                color: period === v ? "#60a5fa" : "#475569",
+              }}>{l}</button>
+            ))}
+          </div>
+
+          {/* Summary */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 14 }}>
+            {[
+              { label: "Wydatki",   val: periodTotal,                color: "#ef4444" },
+              { label: "Wplywy",    val: periodIncTotal,             color: "#10b981" },
+              { label: "Bilans",    val: periodIncTotal-periodTotal, color: periodIncTotal-periodTotal >= 0 ? "#10b981" : "#ef4444" },
+            ].map(({ label, val, color }) => (
+              <div key={label} style={{ background: "#0f1825", border: "1px solid #1a2744",
+                borderRadius: 12, padding: "10px 8px", textAlign: "center" }}>
+                <div style={{ fontSize: 9, color: "#475569", fontWeight: 700,
+                  textTransform: "uppercase", marginBottom: 4 }}>{label}</div>
+                <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 13,
+                  fontWeight: 700, color }}>{val >= 0 ? "" : "-"}{fmt(Math.abs(val))}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Group + sort */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>Grupuj po</div>
+              <div style={{ display: "flex", gap: 6 }}>
+                {[["cat","Kategorii"],["place","Miejscu"]].map(([v,l]) => (
+                  <button key={v} onClick={() => setGroupBy(v)} style={{
+                    flex: 1, padding: "7px 0", borderRadius: 8, cursor: "pointer",
+                    fontSize: 11, fontWeight: 700,
+                    background: groupBy === v ? "#1e3a5f" : "#060b14",
+                    border: groupBy === v ? "1px solid #2563eb" : "1px solid #1a2744",
+                    color: groupBy === v ? "#60a5fa" : "#475569",
+                  }}>{l}</button>
+                ))}
+              </div>
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 10, color: "#475569", fontWeight: 700, textTransform: "uppercase", marginBottom: 6 }}>Sortuj</div>
+              <div style={{ display: "flex", gap: 4 }}>
+                {[["total","Kwota"],["count","Ilosc"],["avg","Sr."]].map(([v,l]) => (
+                  <button key={v} onClick={() => setSortBy(v)} style={{
+                    flex: 1, padding: "7px 2px", borderRadius: 8, cursor: "pointer",
+                    fontSize: 10, fontWeight: 700,
+                    background: sortBy === v ? "#1e3a5f" : "#060b14",
+                    border: sortBy === v ? "1px solid #2563eb" : "1px solid #1a2744",
+                    color: sortBy === v ? "#60a5fa" : "#475569",
+                  }}>{l}</button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Ranked list */}
+          <Card>
+            <div style={{ fontSize: 11, color: "#64748b", fontWeight: 700,
+              textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>
+              {groupBy === "cat" ? "Kategorie" : "Miejsca"}
+              <span style={{ color: "#334155", fontWeight: 400, marginLeft: 6 }}>({groupedData.length})</span>
+            </div>
+            {groupedData.length === 0 && (
+              <div style={{ fontSize: 13, color: "#334155", textAlign: "center", padding: 16 }}>
+                Brak danych dla wybranego okresu
+              </div>
+            )}
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {groupedData.slice(0, 20).map((row, i) => {
+                const cat  = getCat(row.cat);
+                const Icon = cat.icon;
+                const pct  = (row.total / maxVal) * 100;
+                return (
+                  <div key={row.key}>
+                    <div style={{ display: "flex", justifyContent: "space-between",
+                      alignItems: "center", marginBottom: 4 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                        <span style={{ fontSize: 11, color: "#334155", fontFamily: "'DM Mono', monospace",
+                          width: 16, flexShrink: 0 }}>{i+1}</span>
+                        {groupBy === "cat" && (
+                          <div style={{ background: cat.color+"22", borderRadius: 7, padding: 5, flexShrink: 0 }}>
+                            <Icon size={12} color={cat.color}/>
+                          </div>
+                        )}
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ fontSize: 13, fontWeight: 500, overflow: "hidden",
+                            textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {groupBy === "cat" ? cat.label : row.key}
+                          </div>
+                          <div style={{ fontSize: 10, color: "#475569" }}>
+                            {row.count}x · sr. {fmt(row.avg)}
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 8 }}>
+                        <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 14,
+                          fontWeight: 700, color: groupBy === "cat" ? cat.color : "#e2e8f0" }}>
+                          {fmt(row.total)}
+                        </div>
+                        <div style={{ fontSize: 10, color: "#334155" }}>
+                          {(row.total / periodTotal * 100).toFixed(0)}%
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ background: "#0f1825", borderRadius: 4, height: 4 }}>
+                      <div style={{ width: pct + "%", height: "100%", borderRadius: 4,
+                        background: groupBy === "cat" ? cat.color : "#3b82f6",
+                        opacity: 0.8 }}/>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Biezacy miesiac view */}
+      {activeView === "month" && <div>
+
       <div style={{ paddingTop: 8, paddingBottom: 16 }}>
         <div style={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 2 }}>Analityka · {cycleDay > 1 ? fmtCycleLabel(month, cycleDay) : MONTH_NAMES[month]}</div>
       </div>
@@ -2322,12 +3957,165 @@ const AnalyticsView = ({ transactions, month, cycleDay = 1 }) => {
           );
         })}
       </Card>
+
+      {/* Per-sklep / per-miejsce */}
+      {(() => {
+        const shopMap = {};
+        transactions
+          .filter(t => t.amount < 0 && t.cat !== "inne")
+          .forEach(t => {
+            const key = t.desc.trim();
+            if (!shopMap[key]) shopMap[key] = { count: 0, total: 0, cat: t.cat };
+            shopMap[key].count++;
+            shopMap[key].total += Math.abs(t.amount);
+          });
+        const shops = Object.entries(shopMap)
+          .filter(([,d]) => d.count >= 1)
+          .sort((a,b) => b[1].total - a[1].total)
+          .slice(0, 15);
+        if (shops.length === 0) return null;
+        const maxVal = shops[0][1].total;
+        return (
+          <Card>
+            <div style={{ fontWeight: 700, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>🏪 Wydatki per miejsce</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {shops.map(([name, data]) => {
+                const cat   = getCat(data.cat);
+                const Icon  = cat.icon;
+                const pct   = (data.total / maxVal) * 100;
+                return (
+                  <div key={name}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                        <div style={{ background: cat.color+"22", borderRadius: 8, padding: 5, flexShrink: 0 }}>
+                          <Icon size={12} color={cat.color}/>
+                        </div>
+                        <span style={{ fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</span>
+                        <span style={{ fontSize: 10, color: "#334155", flexShrink: 0 }}>×{data.count}</span>
+                      </div>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 13, color: cat.color, flexShrink: 0, marginLeft: 8 }}>{fmt(data.total)}</span>
+                    </div>
+                    <div style={{ background: "#0f1825", borderRadius: 3, height: 3 }}>
+                      <div style={{ width: `${pct}%`, height: "100%", background: cat.color, borderRadius: 3, opacity: 0.7 }}/>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        );
+      })()}
+
+      {/* Por wnanie miesi cy */}
+      <MonthComparison transactions={transactions} month={month}/>
+
+      {/* Rozliczenie z King  */}
+      {(() => {
+        const monthKey    = `2026-${String(month+1).padStart(2,"0")}`;
+        const sharedItems = (payments||[]).filter(p => {
+          if (!p.shared) return false;
+          if (p.freq === "weekly" || p.freq === "daily") return false;
+          if (p.freq === "bimonthly") {
+            const startM = p.startMonth || new Date().getMonth();
+            if (Math.abs(month - startM) % 2 !== 0) return false;
+          }
+          return true;
+        });
+        if (sharedItems.length === 0) return (
+          <Card style={{ marginTop: 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>👫 Rozliczenie z Kingą</div>
+            <div style={{ fontSize: 13, color: "#334155", textAlign: "center", padding: "12px 0" }}>
+              Brak wspólnych rachunków — zaznacz „Wspólne z Kingą" w Płatnościach
+            </div>
+          </Card>
+        );
+
+        const totalShared = sharedItems.reduce((s, x) => s + Math.abs(x.amount), 0);
+        const halfTotal   = totalShared / 2;
+        const paidAmt     = sharedItems
+          .filter(item => !!(paid||{})[`${item.id}_${monthKey}`])
+          .reduce((s, x) => s + Math.abs(x.amount), 0);
+
+        return (
+          <Card style={{ marginTop: 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#10b981",
+              textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>
+              👫 Rozliczenie z Kingą · {MONTH_NAMES[month]}
+            </div>
+
+            {/* Shared items list */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+              {sharedItems.map(item => {
+                const isPd = !!(paid||{})[`${item.id}_${monthKey}`];
+                return (
+                  <div key={item.id} style={{
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
+                    padding: "9px 12px",
+                    background: isPd ? "#0a1410" : "#060b14",
+                    borderRadius: 10, border: `1px solid ${isPd ? "#16a34a33" : "#1a2744"}`,
+                  }}>
+                    <div>
+                      <span style={{ fontSize: 13, color: isPd ? "#475569" : "#e2e8f0",
+                        textDecoration: isPd ? "line-through" : "none" }}>{item.name}</span>
+                      {isPd && <span style={{ fontSize: 10, color: "#10b981", marginLeft: 8 }}></span>}
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 13,
+                        color: isPd ? "#334155" : "#e2e8f0" }}>{fmt(Math.abs(item.amount))}</div>
+                      <div style={{ fontSize: 11, color: "#475569" }}>
+                        po {fmt(Math.abs(item.amount) / 2)}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ height: 1, background: "#1a2744", marginBottom: 14 }}/>
+
+            {/* Summary grid */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: paidAmt > 0 ? 10 : 0 }}>
+              {[
+                { label: "Razem", val: totalShared, color: "#e2e8f0" },
+                { label: "Twoja połowa", val: halfTotal, color: "#60a5fa" },
+                { label: "Połowa Kingi", val: halfTotal, color: "#f59e0b" },
+              ].map(({ label, val, color }) => (
+                <div key={label} style={{ background: "#060b14", borderRadius: 10,
+                  padding: "10px 8px", textAlign: "center" }}>
+                  <div style={{ fontSize: 9, color: "#475569", fontWeight: 700,
+                    textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>{label}</div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: 14,
+                    fontWeight: 700, color }}>{fmt(val)}</div>
+                </div>
+              ))}
+            </div>
+
+            {paidAmt > 0 && (
+              <div style={{ padding: "10px 12px", background: "#0a1e12",
+                border: "1px solid #16a34a22", borderRadius: 8,
+                display: "flex", justifyContent: "space-between", fontSize: 12 }}>
+                <span style={{ color: "#475569" }}>Zapłacono: <span style={{ color: "#10b981",
+                  fontFamily: "'DM Mono', monospace", fontWeight: 700 }}>{fmt(paidAmt)}</span></span>
+                <span style={{ color: "#475569" }}>Zostało: <span style={{ color: "#f59e0b",
+                  fontFamily: "'DM Mono', monospace", fontWeight: 700 }}>{fmt(totalShared - paidAmt)}</span></span>
+              </div>
+            )}
+          </Card>
+        );
+      })()}
+
+    </div>
+      </div>}
+
+    </div>
+      </div>}
+
     </div>
   );
 };
 
-// ── MAIN APP ─────────────────────────────────────────────────────────────────
-// ── STORAGE — localStorage (działa na GitHub Pages) ─────────────────────────
+//    MAIN APP                                                                  
+//    STORAGE   localStorage (dzia a na GitHub Pages)                          
 const LS_KEY = "fintrack_v1";
 
 function saveToStorage(data) {
@@ -2340,11 +4128,74 @@ function saveToStorage(data) {
   }
 }
 
+function migrateData(d) {
+  // v1 v2: bills+recurring   payments
+  if (!d.payments && (d.bills || d.recurring)) {
+    const bills     = d.bills     || [];
+    const recurring = d.recurring || [];
+    d.payments = [
+      ...bills.map(b => ({
+        id: b.id, name: b.name,
+        amount: -(Math.abs(b.amount || 0)),
+        cat: b.cat || "rachunki",
+        acc: b.acc || 1,
+        color: b.color || "#f59e0b",
+        type: "bill",
+        freq: "monthly",
+        dueDay: b.dueDay || 1,
+        dayOfMonth: b.dueDay || 1,
+        trackPaid: true,
+        shared: false,
+      })),
+      ...recurring
+        .filter(r => !bills.find(b => b.name === r.desc))
+        .map(r => ({
+          id: r.id, name: r.desc || r.name,
+          amount: r.amount || 0,
+          cat: r.cat || "rachunki",
+          acc: r.acc || 1,
+          color: "#8b5cf6",
+          type: r.freq === "weekly" ? "sub" : "bill",
+          freq: r.freq || "monthly",
+          dueDay: r.dayOfMonth || 1,
+          dayOfMonth: r.dayOfMonth || 1,
+          dayOfWeek: r.dayOfWeek || 1,
+          trackPaid: false,
+          shared: false,
+        })),
+    ];
+    delete d.bills;
+    delete d.recurring;
+  }
+  // ensure payments is always array
+  if (!Array.isArray(d.payments)) d.payments = [];
+  // ensure goals is always array
+  if (!Array.isArray(d.goals)) d.goals = [];
+  // ensure accounts have required fields
+  if (Array.isArray(d.accounts)) {
+    d.accounts = d.accounts.map(a => ({
+      ...a,
+      type: a.type || "checking",
+      color: a.color || "#3b82f6",
+      iban: a.iban || "",
+    }));
+  }
+  // ensure paid is object
+  if (!d.paid || typeof d.paid !== "object") d.paid = {};
+  return d;
+}
+
 function loadFromStorage() {
   try {
     const raw = localStorage.getItem(LS_KEY);
-    if (raw) return Promise.resolve(JSON.parse(raw));
-  } catch(e) {}
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return Promise.resolve(migrateData(parsed));
+    }
+  } catch(e) {
+    console.warn("[FT] load error, clearing corrupt data:", e);
+    try { localStorage.removeItem(LS_KEY); } catch(_) {}
+  }
   return Promise.resolve(null);
 }
 
@@ -2368,9 +4219,15 @@ function loadSnapshotFromJSON(json) {
 }
 
 
+//    NOTIFICATIONS                                                             
+
 export default function App() {
   const [tab, setTab] = useState("dashboard");
   const [month, setMonth] = useState(2);
+  const [customCats,   setCustomCats]   = useState([]);
+  const [vacationArchive, setVacationArchive] = useState(
+    () => JSON.parse(localStorage.getItem("ft_vacations") || "[]")
+  );
   const [accounts,     setAccounts]     = useState(INITIAL_ACCOUNTS);
   const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
   const [budgets,      setBudgets]      = useState(INITIAL_BUDGETS);
@@ -2382,43 +4239,60 @@ export default function App() {
   const [goals,        setGoals]        = useState(INITIAL_GOALS);
   const [fabOpen, setFabOpen] = useState(false);
   const [loaded,        setLoaded]        = useState(false);
+
+  // Merged categories for use in forms
+  const allCategories = useMemo(() => [...BASE_CATEGORIES, ...customCats], [customCats]);
   const [saveIndicator, setSaveIndicator] = useState(false);
   const [importErr,     setImportErr]     = useState("");
   const stateRef = useRef(null);
-  stateRef.current = { accounts, transactions, budgets, payments, paid, goals, month, cycleDay };
+  stateRef.current = { accounts, transactions, budgets, payments, paid, goals, month, cycleDay, customCats };
 
-  // ── LOAD once on mount ────────────────────────────────────────────────────
+  //    LOAD once on mount                                                     
   useEffect(() => {
     loadFromStorage().then(d => {
-      if (d) {
-        if (d.accounts)        setAccounts(d.accounts);
-        if (d.transactions)    setTransactions(d.transactions);
-        if (d.budgets)         setBudgets(d.budgets);
-        if (d.payments)        setPayments(d.payments);
-        if (d.paid)            setPaid(d.paid);
-        if (d.goals)           setGoals(d.goals);
-        if (d.month   != null) setMonth(d.month);
-        if (d.cycleDay != null) setCycleDay(d.cycleDay);
+      try {
+        if (d) {
+          if (Array.isArray(d.accounts) && d.accounts.length)     setAccounts(d.accounts);
+          if (Array.isArray(d.transactions) && d.transactions.length) setTransactions(d.transactions);
+          if (Array.isArray(d.budgets)  && d.budgets.length)      setBudgets(d.budgets);
+          if (Array.isArray(d.payments))                           setPayments(d.payments);
+          if (d.paid && typeof d.paid === "object")                setPaid(d.paid);
+          if (Array.isArray(d.goals))                              setGoals(d.goals);
+          if (Array.isArray(d.customCats))                         setCustomCats(d.customCats);
+          if (d.month   != null && d.month   >= 0 && d.month   <= 11) setMonth(d.month);
+          if (d.cycleDay != null && d.cycleDay >= 1 && d.cycleDay <= 28) setCycleDay(d.cycleDay);
+        }
+      } catch(e) {
+        console.error("[FT] error restoring data:", e);
+        // Don't crash   just start fresh
       }
       setLoaded(true);
+    }).catch(e => {
+      console.error("[FT] load failed:", e);
+      setLoaded(true); // still show app even if load fails
     });
   }, []);
 
-  // ── SAVE on every change (debounced) ─────────────────────────────────────
+
+  //    SAVE on every change (debounced)                                      
   useEffect(() => {
     if (!loaded) return;
     const t = setTimeout(() => {
-      saveToStorage(stateRef.current).then(ok => {
+      saveToStorage({ ...stateRef.current, customCats }).then(ok => {
         if (ok) { setSaveIndicator(true); setTimeout(() => setSaveIndicator(false), 2000); }
       });
     }, 500);
     return () => clearTimeout(t);
-  }, [loaded, accounts, transactions, budgets, payments, paid, goals, month, cycleDay]);
+  }, [loaded, accounts, transactions, budgets, payments, paid, goals, month, cycleDay, customCats]);
 
-  // ── JSON export (backup) ──────────────────────────────────────────────────
+  useEffect(() => {
+    localStorage.setItem("ft_vacations", JSON.stringify(vacationArchive));
+  }, [vacationArchive]);
+
+  //    JSON export (backup)                                                   
   const handleSaveFile = () => downloadJSON(stateRef.current);
 
-  // ── JSON import (restore backup) ─────────────────────────────────────────
+  //    JSON import (restore backup)                                          
   const handleLoadFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -2439,9 +4313,18 @@ export default function App() {
     reader.readAsText(file);
     e.target.value = "";
   };
-  const unpaidBillsCount = payments.filter(p =>
-    p.trackPaid && p.freq !== "weekly" && !paid[`${p.id}_2026-${String(month+1).padStart(2,"0")}`]
-  ).length;
+  const currentMonthKey = `2026-${String(month+1).padStart(2,"0")}`;
+  const unpaidBillsCount = payments.filter(p => {
+    if (!p.trackPaid) return false;
+    if (p.freq === "weekly" || p.freq === "daily") return false;
+    if (paid[`${p.id}_${currentMonthKey}`]) return false;
+    // bimonthly   only count if active this month
+    if (p.freq === "bimonthly") {
+      const startM = p.startMonth || new Date().getMonth();
+      if (Math.abs(month - startM) % 2 !== 0) return false;
+    }
+    return true;
+  }).length;
 
   const TABS = [
     { id: "dashboard",    label: "Start",      Icon: Home },
@@ -2509,12 +4392,12 @@ export default function App() {
 
       {/* Page content */}
       <div style={{ paddingBottom: 20 }}>
-        {tab === "dashboard"    && <Dashboard accounts={accounts} transactions={transactions} month={month} setMonth={setMonth} onAddTx={() => setQuickAddOpen(true)} cycleDay={cycleDay}/>}
+        {tab === "dashboard"    && <Dashboard accounts={accounts} transactions={transactions} setTransactions={setTransactions} payments={payments} month={month} setMonth={setMonth} onAddTx={() => setQuickAddOpen(true)} cycleDay={cycleDay}/>}
         {tab === "accounts"     && <AccountsView accounts={accounts} setAccounts={setAccounts}/>}
-        {tab === "transactions" && <TransactionsView transactions={transactions} setTransactions={setTransactions} accounts={accounts} setAccounts={setAccounts} _forceOpenModal={fabOpen} _onModalClose={() => setFabOpen(false)}/>}
+        {tab === "transactions" && <TransactionsView transactions={transactions} setTransactions={setTransactions} accounts={accounts} setAccounts={setAccounts} allCats={allCategories} _forceOpenModal={fabOpen} _onModalClose={() => setFabOpen(false)}/>}
         {tab === "payments"     && <PaymentsView payments={payments} setPayments={setPayments} paid={paid} setPaid={setPaid} transactions={transactions} setTransactions={setTransactions} accounts={accounts} month={month}/>}
-        {tab === "goals"        && <GoalsView goals={goals} setGoals={setGoals} accounts={accounts}/>}
-        {tab === "analytics"    && <AnalyticsView transactions={transactions} month={month} cycleDay={cycleDay}/>}
+        {tab === "goals"        && <GoalsView goals={goals} setGoals={setGoals} accounts={accounts} budgets={budgets} setBudgets={setBudgets} transactions={transactions} month={month} cycleDay={cycleDay} vacationArchive={vacationArchive} setVacationArchive={setVacationArchive}/>}
+        {tab === "analytics"    && <AnalyticsView transactions={transactions} payments={payments} paid={paid} month={month} cycleDay={cycleDay}/>}
       </div>
 
       {/* Settings panel */}
@@ -2535,12 +4418,16 @@ export default function App() {
         accounts={accounts}
         transactions={transactions}
         budgets={budgets}
+        payments={payments}
         paid={paid}
+        goals={goals}
+        customCats={customCats}
         setTransactions={setTransactions}
         setAccounts={setAccounts}
         setBudgets={setBudgets}
         cycleDay={cycleDay}
         setCycleDay={setCycleDay}
+        setCustomCats={setCustomCats}
       />
 
       {/* Quick-add transaction modal (from reminder) */}
@@ -2550,12 +4437,13 @@ export default function App() {
           setTransactions={(txs) => { setTransactions(txs); setQuickAddOpen(false); }}
           accounts={accounts}
           setAccounts={setAccounts}
+          allCats={allCategories}
           _forceOpenModal={true}
           _onClose={() => setQuickAddOpen(false)}
         />
       )}
 
-{/* FAB is now inside the nav bar — see below */}
+{/* FAB is now inside the nav bar   see below */}
 
       {/* Bottom navigation */}
       <div style={{
